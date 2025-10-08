@@ -1,0 +1,292 @@
+{
+  "@@locale": "ar",
+  "appTitle": "ورشة إيفماستر",
+  "@appTitle": {
+    "description": "The main application title"
+  },
+  
+  "login": "تسجيل الدخول",
+  "@login": {
+    "description": "Login button text"
+  },
+  
+  "logout": "تسجيل الخروج",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  
+  "enterClientCode": "أدخل كود العميل",
+  "@enterClientCode": {
+    "description": "Label for client code input field"
+  },
+  
+  "clientCodeHint": "أدخل كود العميل الخاص بك",
+  "@clientCodeHint": {
+    "description": "Hint text for client code input field"
+  },
+  
+  "invalidClientCode": "كود العميل غير صحيح. يرجى المحاولة مرة أخرى.",
+  "@invalidClientCode": {
+    "description": "Error message for invalid client code"
+  },
+  
+  "loginError": "فشل تسجيل الدخول. يرجى التحقق من كود العميل.",
+  "@loginError": {
+    "description": "Generic login error message"
+  },
+  
+  "welcome": "مرحباً",
+  "@welcome": {
+    "description": "Welcome greeting"
+  },
+  
+  "profile": "الملف الشخصي",
+  "@profile": {
+    "description": "Profile page title"
+  },
+  
+  "myCars": "سياراتي",
+  "@myCars": {
+    "description": "My cars section title"
+  },
+  
+  "carDetails": "تفاصيل السيارة",
+  "@carDetails": {
+    "description": "Car details page title"
+  },
+  
+  "visitHistory": "سجل الزيارات",
+  "@visitHistory": {
+    "description": "Visit history section title"
+  },
+  
+  "serviceHistory": "سجل الخدمة",
+  "@serviceHistory": {
+    "description": "Service history section title"
+  },
+  
+  "inspectionHistory": "سجل الفحوصات",
+  "@inspectionHistory": {
+    "description": "Inspection history section title"
+  },
+  
+  "noVisitHistory": "لا يوجد سجل زيارات",
+  "@noVisitHistory": {
+    "description": "Message when no visit history is available"
+  },
+  
+  "serviceInspectionRecords": "ستظهر سجلات الخدمة والفحص هنا.",
+  "@serviceInspectionRecords": {
+    "description": "Description for empty visit history"
+  },
+  
+  "vehicleStats": "إحصائيات المركبة",
+  "@vehicleStats": {
+    "description": "Vehicle statistics section title"
+  },
+  
+  "totalServices": "إجمالي الخدمات",
+  "@totalServices": {
+    "description": "Total services counter label"
+  },
+  
+  "totalInspections": "إجمالي الفحوصات",
+  "@totalInspections": {
+    "description": "Total inspections counter label"
+  },
+  
+  "lastService": "آخر خدمة",
+  "@lastService": {
+    "description": "Last service date label"
+  },
+  
+  "lastInspection": "آخر فحص",
+  "@lastInspection": {
+    "description": "Last inspection date label"
+  },
+  
+  "vehicleInspection": "فحص المركبة",
+  "@vehicleInspection": {
+    "description": "Vehicle inspection title"
+  },
+  
+  "overallCondition": "الحالة العامة: {condition}",
+  "@overallCondition": {
+    "description": "Overall condition description",
+    "placeholders": {
+      "condition": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "cost": "التكلفة",
+  "@cost": {
+    "description": "Cost label"
+  },
+  
+  "date": "التاريخ",
+  "@date": {
+    "description": "Date label"
+  },
+  
+  "status": "الحالة",
+  "@status": {
+    "description": "Status label"
+  },
+  
+  "completed": "مكتمل",
+  "@completed": {
+    "description": "Completed status"
+  },
+  
+  "pending": "قيد الانتظار",
+  "@pending": {
+    "description": "Pending status"
+  },
+  
+  "inProgress": "قيد التنفيذ",
+  "@inProgress": {
+    "description": "In progress status"
+  },
+  
+  "serviceDetails": "تفاصيل الخدمة",
+  "@serviceDetails": {
+    "description": "Service details page title"
+  },
+  
+  "inspectionDetails": "تفاصيل الفحص",
+  "@inspectionDetails": {
+    "description": "Inspection details page title"
+  },
+  
+  "inspectionItems": "عناصر الفحص",
+  "@inspectionItems": {
+    "description": "Inspection items section title"
+  },
+  
+  "recommendations": "التوصيات",
+  "@recommendations": {
+    "description": "Recommendations section title"
+  },
+  
+  "technicianNotes": "ملاحظات الفني",
+  "@technicianNotes": {
+    "description": "Technician notes section title"
+  },
+  
+  "good": "جيد",
+  "@good": {
+    "description": "Good status"
+  },
+  
+  "needsAttention": "يحتاج انتباه",
+  "@needsAttention": {
+    "description": "Needs attention status"
+  },
+  
+  "fair": "مقبول",
+  "@fair": {
+    "description": "Fair status"
+  },
+  
+  "poor": "ضعيف",
+  "@poor": {
+    "description": "Poor status"
+  },
+  
+  "language": "اللغة",
+  "@language": {
+    "description": "Language settings label"
+  },
+  
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  
+  "arabic": "العربية",
+  "@arabic": {
+    "description": "Arabic language option"
+  },
+  
+  "selectLanguage": "اختر اللغة",
+  "@selectLanguage": {
+    "description": "Language selection dialog title"
+  },
+  
+  "settings": "الإعدادات",
+  "@settings": {
+    "description": "Settings page title"
+  },
+  
+  "contactInfo": "معلومات الاتصال",
+  "@contactInfo": {
+    "description": "Contact information section title"
+  },
+  
+  "phone": "الهاتف",
+  "@phone": {
+    "description": "Phone number label"
+  },
+  
+  "email": "البريد الإلكتروني",
+  "@email": {
+    "description": "Email address label"
+  },
+  
+  "address": "العنوان",
+  "@address": {
+    "description": "Address label"
+  },
+  
+  "make": "الماركة",
+  "@make": {
+    "description": "Car make label"
+  },
+  
+  "model": "الطراز",
+  "@model": {
+    "description": "Car model label"
+  },
+  
+  "year": "السنة",
+  "@year": {
+    "description": "Car year label"
+  },
+  
+  "licensePlate": "لوحة الترخيص",
+  "@licensePlate": {
+    "description": "License plate label"
+  },
+  
+  "loading": "جاري التحميل...",
+  "@loading": {
+    "description": "Loading message"
+  },
+  
+  "error": "خطأ",
+  "@error": {
+    "description": "Generic error message"
+  },
+  
+  "retry": "إعادة المحاولة",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  
+  "close": "إغلاق",
+  "@close": {
+    "description": "Close button text"
+  },
+  
+  "cancel": "إلغاء",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  
+  "save": "حفظ",
+  "@save": {
+    "description": "Save button text"
+  }
+}

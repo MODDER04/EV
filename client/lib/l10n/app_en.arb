@@ -1,0 +1,292 @@
+{
+  "@@locale": "en",
+  "appTitle": "EvMaster Workshop",
+  "@appTitle": {
+    "description": "The main application title"
+  },
+  
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
+  },
+  
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  
+  "enterClientCode": "Enter Client Code",
+  "@enterClientCode": {
+    "description": "Label for client code input field"
+  },
+  
+  "clientCodeHint": "Enter your client code",
+  "@clientCodeHint": {
+    "description": "Hint text for client code input field"
+  },
+  
+  "invalidClientCode": "Invalid client code. Please try again.",
+  "@invalidClientCode": {
+    "description": "Error message for invalid client code"
+  },
+  
+  "loginError": "Login failed. Please check your client code.",
+  "@loginError": {
+    "description": "Generic login error message"
+  },
+  
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome greeting"
+  },
+  
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile page title"
+  },
+  
+  "myCars": "My Cars",
+  "@myCars": {
+    "description": "My cars section title"
+  },
+  
+  "carDetails": "Car Details",
+  "@carDetails": {
+    "description": "Car details page title"
+  },
+  
+  "visitHistory": "Visit History",
+  "@visitHistory": {
+    "description": "Visit history section title"
+  },
+  
+  "serviceHistory": "Service History",
+  "@serviceHistory": {
+    "description": "Service history section title"
+  },
+  
+  "inspectionHistory": "Inspection History",
+  "@inspectionHistory": {
+    "description": "Inspection history section title"
+  },
+  
+  "noVisitHistory": "No visit history found",
+  "@noVisitHistory": {
+    "description": "Message when no visit history is available"
+  },
+  
+  "serviceInspectionRecords": "Service and inspection records will appear here.",
+  "@serviceInspectionRecords": {
+    "description": "Description for empty visit history"
+  },
+  
+  "vehicleStats": "Vehicle Stats",
+  "@vehicleStats": {
+    "description": "Vehicle statistics section title"
+  },
+  
+  "totalServices": "Total Services",
+  "@totalServices": {
+    "description": "Total services counter label"
+  },
+  
+  "totalInspections": "Total Inspections",
+  "@totalInspections": {
+    "description": "Total inspections counter label"
+  },
+  
+  "lastService": "Last Service",
+  "@lastService": {
+    "description": "Last service date label"
+  },
+  
+  "lastInspection": "Last Inspection",
+  "@lastInspection": {
+    "description": "Last inspection date label"
+  },
+  
+  "vehicleInspection": "Vehicle Inspection",
+  "@vehicleInspection": {
+    "description": "Vehicle inspection title"
+  },
+  
+  "overallCondition": "Overall condition: {condition}",
+  "@overallCondition": {
+    "description": "Overall condition description",
+    "placeholders": {
+      "condition": {
+        "type": "String"
+      }
+    }
+  },
+  
+  "cost": "Cost",
+  "@cost": {
+    "description": "Cost label"
+  },
+  
+  "date": "Date",
+  "@date": {
+    "description": "Date label"
+  },
+  
+  "status": "Status",
+  "@status": {
+    "description": "Status label"
+  },
+  
+  "completed": "Completed",
+  "@completed": {
+    "description": "Completed status"
+  },
+  
+  "pending": "Pending",
+  "@pending": {
+    "description": "Pending status"
+  },
+  
+  "inProgress": "In Progress",
+  "@inProgress": {
+    "description": "In progress status"
+  },
+  
+  "serviceDetails": "Service Details",
+  "@serviceDetails": {
+    "description": "Service details page title"
+  },
+  
+  "inspectionDetails": "Inspection Details",
+  "@inspectionDetails": {
+    "description": "Inspection details page title"
+  },
+  
+  "inspectionItems": "Inspection Items",
+  "@inspectionItems": {
+    "description": "Inspection items section title"
+  },
+  
+  "recommendations": "Recommendations",
+  "@recommendations": {
+    "description": "Recommendations section title"
+  },
+  
+  "technicianNotes": "Technician Notes",
+  "@technicianNotes": {
+    "description": "Technician notes section title"
+  },
+  
+  "good": "Good",
+  "@good": {
+    "description": "Good status"
+  },
+  
+  "needsAttention": "Needs Attention",
+  "@needsAttention": {
+    "description": "Needs attention status"
+  },
+  
+  "fair": "Fair",
+  "@fair": {
+    "description": "Fair status"
+  },
+  
+  "poor": "Poor",
+  "@poor": {
+    "description": "Poor status"
+  },
+  
+  "language": "Language",
+  "@language": {
+    "description": "Language settings label"
+  },
+  
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  
+  "arabic": "Arabic",
+  "@arabic": {
+    "description": "Arabic language option"
+  },
+  
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Language selection dialog title"
+  },
+  
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings page title"
+  },
+  
+  "contactInfo": "Contact Information",
+  "@contactInfo": {
+    "description": "Contact information section title"
+  },
+  
+  "phone": "Phone",
+  "@phone": {
+    "description": "Phone number label"
+  },
+  
+  "email": "Email",
+  "@email": {
+    "description": "Email address label"
+  },
+  
+  "address": "Address",
+  "@address": {
+    "description": "Address label"
+  },
+  
+  "make": "Make",
+  "@make": {
+    "description": "Car make label"
+  },
+  
+  "model": "Model",
+  "@model": {
+    "description": "Car model label"
+  },
+  
+  "year": "Year",
+  "@year": {
+    "description": "Car year label"
+  },
+  
+  "licensePlate": "License Plate",
+  "@licensePlate": {
+    "description": "License plate label"
+  },
+  
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading message"
+  },
+  
+  "error": "Error",
+  "@error": {
+    "description": "Generic error message"
+  },
+  
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button text"
+  },
+  
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
+  
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  }
+}

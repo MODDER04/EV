@@ -1,0 +1,33 @@
+# Backend
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/evmaster.db
+backend/venv/
+backend/.pytest_cache/
+backend/alembic/versions/*.py
+
+# Flutter
+client/.dart_tool/
+client/.packages
+client/.pub-cache/
+client/.pub/
+client/build/
+client/.flutter-plugins
+client/.flutter-plugins-dependencies
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Dependencies
+node_modules/
