@@ -274,4 +274,24 @@ class WorkshopApiClient {
       return null;
     }
   }
+
+  // Get FAQs with language support
+  Future<List<dynamic>?> getFAQs({String language = 'en'}) async {
+    try {
+      final response = await http.get(
+        Uri.parse('$_baseUrl/faq?lang=$language'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      }
+      return null;
+    } catch (e) {
+      print('FAQs fetch error: $e');
+      return null;
+    }
+  }
 }

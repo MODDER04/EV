@@ -22,7 +22,7 @@ class ApiConfig {
       }
     } else {
       // Production URL - replace with your actual production API URL
-      url = 'https://your-api-domain.com';
+      url = 'http://$_macBookIP:8000';
     }
     
     // Debug output to show which URL is being used

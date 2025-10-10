@@ -230,11 +230,11 @@ abstract class AppLocalizations {
   /// **'Vehicle Inspection'**
   String get vehicleInspection;
 
-  /// Overall condition description
+  /// Overall condition label
   ///
   /// In en, this message translates to:
-  /// **'Overall condition: {condition}'**
-  String overallCondition(String condition);
+  /// **'Overall Condition'**
+  String get overallCondition;
 
   /// Cost label
   ///
@@ -439,6 +439,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get save;
+
+  /// Home navigation label
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// Book navigation label
+  ///
+  /// In en, this message translates to:
+  /// **'Book'**
+  String get book;
+
+  /// FAQ navigation label
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ'**
+  String get faq;
+
+  /// Quick check-in section title
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Check-in'**
+  String get quickCheckin;
+
+  /// QR scanner card title
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to Check In'**
+  String get tapToCheckIn;
+
+  /// QR scanner card description
+  ///
+  /// In en, this message translates to:
+  /// **'Let us know you\'ve arrived'**
+  String get letUsKnow;
+
+  /// Recent activity section title
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get recentActivity;
+
+  /// No vehicles message
+  ///
+  /// In en, this message translates to:
+  /// **'No vehicles found'**
+  String get noVehiclesFound;
+
+  /// Contact workshop message
+  ///
+  /// In en, this message translates to:
+  /// **'Contact the workshop to add vehicles to your account.'**
+  String get contactWorkshop;
+
+  /// No service history message
+  ///
+  /// In en, this message translates to:
+  /// **'No recent service history'**
+  String get noRecentHistory;
+
+  /// Service history explanation
+  ///
+  /// In en, this message translates to:
+  /// **'Your service history will appear here after your first visit.'**
+  String get historyWillAppear;
+
+  /// Welcome back greeting
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get welcomeBack;
+
+  /// Book a visit page title
+  ///
+  /// In en, this message translates to:
+  /// **'Book a Visit'**
+  String get bookAVisit;
+
+  /// Select date section title
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDate;
+
+  /// Select time section title
+  ///
+  /// In en, this message translates to:
+  /// **'Select Time'**
+  String get selectTime;
+
+  /// FAQ search placeholder
+  ///
+  /// In en, this message translates to:
+  /// **'Search FAQs'**
+  String get searchFAQs;
+
+  /// Common questions section title
+  ///
+  /// In en, this message translates to:
+  /// **'Common Questions'**
+  String get commonQuestions;
+
+  /// FAQ: What types of services
+  ///
+  /// In en, this message translates to:
+  /// **'What types of services do you offer'**
+  String get whatTypesOfServices;
+
+  /// FAQ: How long does service take
+  ///
+  /// In en, this message translates to:
+  /// **'How long does a typical service take'**
+  String get howLongService;
+
+  /// FAQ: What's included in service
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s included in a standard service'**
+  String get whatsIncluded;
+
+  /// FAQ: How to book a service
+  ///
+  /// In en, this message translates to:
+  /// **'How do I book a service'**
+  String get howDoIBook;
+
+  /// FAQ: Do you use genuine parts
+  ///
+  /// In en, this message translates to:
+  /// **'Do you use genuine parts'**
+  String get genuineParts;
+
+  /// Service statistics section title
+  ///
+  /// In en, this message translates to:
+  /// **'Service Statistics'**
+  String get serviceStatistics;
+
+  /// Inspections counter label
+  ///
+  /// In en, this message translates to:
+  /// **'Inspections'**
+  String get inspections;
+
+  /// Total services counter in stats
+  ///
+  /// In en, this message translates to:
+  /// **'Total Services'**
+  String get totalServicesCount;
+
+  /// Last service date in stats
+  ///
+  /// In en, this message translates to:
+  /// **'Last Service'**
+  String get lastServiceDate;
+
+  /// Last inspection date in stats
+  ///
+  /// In en, this message translates to:
+  /// **'Last Inspection'**
+  String get lastInspectionDate;
+
+  /// Inspected status
+  ///
+  /// In en, this message translates to:
+  /// **'Inspected'**
+  String get inspected;
+
+  /// Inspection report title
+  ///
+  /// In en, this message translates to:
+  /// **'Inspection Report'**
+  String get inspectionReport;
+
+  /// Inspection summary section title
+  ///
+  /// In en, this message translates to:
+  /// **'Inspection Summary'**
+  String get inspectionSummary;
+
+  /// Sample recommended actions
+  ///
+  /// In en, this message translates to:
+  /// **'Replace air filter within next 3 months, Check coolant level'**
+  String get recommendedActions;
+
+  /// Engine component label
+  ///
+  /// In en, this message translates to:
+  /// **'Engine'**
+  String get engine;
+
+  /// Brakes component label
+  ///
+  /// In en, this message translates to:
+  /// **'Brakes'**
+  String get brakes;
+
+  /// Tires component label
+  ///
+  /// In en, this message translates to:
+  /// **'Tires'**
+  String get tires;
+
+  /// Engine inspection note
+  ///
+  /// In en, this message translates to:
+  /// **'Engine running smoothly, no unusual noises or vibrations'**
+  String get engineRunningSmooth;
+
+  /// Brake inspection note
+  ///
+  /// In en, this message translates to:
+  /// **'New brake pads installed recently, good stopping power'**
+  String get brakePadsInstalled;
+
+  /// Tire inspection note
+  ///
+  /// In en, this message translates to:
+  /// **'Tread depth is 6mm front/5mm rear'**
+  String get treadDepth;
+
+  /// Brake service title
+  ///
+  /// In en, this message translates to:
+  /// **'Brake Service'**
+  String get brakeService;
+
+  /// Description label
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// Brake service description
+  ///
+  /// In en, this message translates to:
+  /// **'Replace brake pads and check brake fluid levels'**
+  String get replaceBrakePads;
+
+  /// Completed on label
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedOn;
+
+  /// Technician notes for brake service
+  ///
+  /// In en, this message translates to:
+  /// **'Brake pads were worn down to 2mm. Replaced with new high-performance pads. Brake fluid topped up'**
+  String get brakePadsWornDown;
+
+  /// Color label
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get color;
 }
 
 class _AppLocalizationsDelegate

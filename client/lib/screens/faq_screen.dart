@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:expansion_tile_card/expansion_tile_card.dart';
+import 'package:provider/provider.dart';
+import '../utils/app_translations.dart';
+import '../services/auth_service.dart';
+import '../providers/language_provider.dart';
 
 class FaqScreen extends StatefulWidget {
   const FaqScreen({super.key});
@@ -10,57 +14,75 @@ class FaqScreen extends StatefulWidget {
 
 class _FaqScreenState extends State<FaqScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final WorkshopApiClient _apiClient = WorkshopApiClient();
   String _searchQuery = '';
+  List<dynamic> _allFaqs = [];
+  bool _isLoading = true;
+  String? _errorMessage;
 
-  final List<Map<String, String>> _faqs = [
-    {
-      'question': 'How do I book a service?',
-      'answer': 'You can book a service through our app or website. Select your vehicle, choose the service, and pick a date and time.',
-      'category': 'Booking'
-    },
-    {
-      'question': 'What types of services do you offer?',
-      'answer': 'We offer a comprehensive range of automotive services including oil changes, brake inspections, tire rotations, battery checks, and more.',
-      'category': 'Services'
-    },
-    {
-      'question': 'How long does a typical service take?',
-      'answer': 'A standard service typically takes 1-2 hours depending on the specific services requested. We\'ll provide you with an estimated completion time when you book.',
-      'category': 'Services'
-    },
-    {
-      'question': 'Can I wait while my car is being serviced?',
-      'answer': 'Yes, we have a comfortable waiting area with complimentary WiFi and refreshments. You can also choose to drop off your vehicle and pick it up later.',
-      'category': 'General'
-    },
-    {
-      'question': 'Do you use genuine parts?',
-      'answer': 'Yes, we use only genuine OEM parts and high-quality aftermarket alternatives. All parts come with manufacturer warranties.',
-      'category': 'Parts'
-    },
-    {
-      'question': 'What\'s included in a standard service?',
-      'answer': 'A standard service includes an oil change, filter replacement, and a general check-up of your vehicle\'s main components.',
-      'category': 'Services'
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _loadFAQs();
+  }
 
-  List<Map<String, String>> get _filteredFaqs {
-    if (_searchQuery.isEmpty) {
-      return _faqs;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload FAQs when language changes
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    if (mounted) {
+      _loadFAQs();
     }
-    return _faqs.where((faq) {
-      final question = faq['question']!.toLowerCase();
-      final answer = faq['answer']!.toLowerCase();
+  }
+
+  Future<void> _loadFAQs() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+      final currentLanguage = languageProvider.locale.languageCode;
+      
+      final faqs = await _apiClient.getFAQs(language: currentLanguage);
+      
+      if (faqs != null) {
+        setState(() {
+          _allFaqs = faqs;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _errorMessage = 'Failed to load FAQs';
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error: $e';
+        _isLoading = false;
+      });
+    }
+  }
+
+  List<dynamic> get _filteredFaqs {
+    if (_searchQuery.isEmpty) {
+      return _allFaqs;
+    }
+    return _allFaqs.where((faq) {
+      final question = faq['question']?.toString().toLowerCase() ?? '';
+      final answer = faq['answer']?.toString().toLowerCase() ?? '';
       final query = _searchQuery.toLowerCase();
       return question.contains(query) || answer.contains(query);
     }).toList();
   }
 
-  Map<String, List<Map<String, String>>> get _groupedFaqs {
-    final grouped = <String, List<Map<String, String>>>{};
+  Map<String, List<dynamic>> get _groupedFaqs {
+    final grouped = <String, List<dynamic>>{};
     for (final faq in _filteredFaqs) {
-      final category = faq['category']!;
+      final category = faq['category']?.toString() ?? 'General';
       if (!grouped.containsKey(category)) {
         grouped[category] = [];
       }
@@ -73,7 +95,7 @@ class _FaqScreenState extends State<FaqScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('FAQ'),
+        title: Text(context.t.faq),
       ),
       body: Column(
         children: [
@@ -83,7 +105,7 @@ class _FaqScreenState extends State<FaqScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search FAQs',
+                hintText: context.t.searchFAQs,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -101,31 +123,50 @@ class _FaqScreenState extends State<FaqScreen> {
 
           // FAQ sections
           Expanded(
-            child: _filteredFaqs.isEmpty
-                ? const Center(
-                    child: Text('No FAQs found matching your search.'),
-                  )
-                : ListView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    children: [
-                      if (_searchQuery.isEmpty) ...[
-                        // Show categories when not searching
-                        ..._buildCategorySections(),
-                      ] else ...[
-                        // Show all matching results when searching
-                        ..._filteredFaqs.map((faq) => _buildFaqCard(faq)),
-                      ],
-                      const SizedBox(height: 100), // Bottom padding
-                    ],
-                  ),
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _errorMessage != null
+                    ? Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                            const SizedBox(height: 16),
+                            Text(_errorMessage!),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: _loadFAQs,
+                              child: const Text('Retry'),
+                            ),
+                          ],
+                        ),
+                      )
+                    : _filteredFaqs.isEmpty
+                        ? const Center(
+                            child: Text('No FAQs found matching your search.'),
+                          )
+                        : ListView(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            children: [
+                              if (_searchQuery.isEmpty) ...[
+                                // Show categories when not searching
+                                ..._buildCategorySections(context),
+                              ] else ...[
+                                // Show all matching results when searching
+                                ..._filteredFaqs.map((faq) => _buildFaqCard(faq)),
+                              ],
+                              const SizedBox(height: 100), // Bottom padding
+                            ],
+                          ),
           ),
         ],
       ),
     );
   }
 
-  List<Widget> _buildCategorySections() {
+  List<Widget> _buildCategorySections(BuildContext context) {
     final sections = <Widget>[];
+    final groupedFaqs = _groupedFaqs;
     
     if (_searchQuery.isEmpty) {
       // Add "Common Questions" section first
@@ -133,7 +174,7 @@ class _FaqScreenState extends State<FaqScreen> {
         Padding(
           padding: const EdgeInsets.only(bottom: 16),
           child: Text(
-            'Common Questions',
+            context.t.commonQuestions,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -145,13 +186,13 @@ class _FaqScreenState extends State<FaqScreen> {
     // Add grouped categories
     final categories = ['Services', 'Booking', 'Parts', 'General'];
     for (final category in categories) {
-      if (_groupedFaqs.containsKey(category)) {
-        if (_searchQuery.isEmpty) {
+      if (groupedFaqs.containsKey(category)) {
+        if (_searchQuery.isEmpty && category == 'Services') {
           sections.add(
             Padding(
               padding: const EdgeInsets.only(top: 24, bottom: 16),
               child: Text(
-                'Service Details',
+                context.t.serviceDetails,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -161,7 +202,7 @@ class _FaqScreenState extends State<FaqScreen> {
         }
         
         sections.addAll(
-          _groupedFaqs[category]!.map((faq) => _buildFaqCard(faq)),
+          groupedFaqs[category]!.map((faq) => _buildFaqCard(faq)),
         );
       }
     }
@@ -169,7 +210,7 @@ class _FaqScreenState extends State<FaqScreen> {
     return sections;
   }
 
-  Widget _buildFaqCard(Map<String, String> faq) {
+  Widget _buildFaqCard(dynamic faq) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ExpansionTileCard(
@@ -179,7 +220,7 @@ class _FaqScreenState extends State<FaqScreen> {
         shadowColor: Colors.black26,
         borderRadius: BorderRadius.circular(12),
         title: Text(
-          faq['question']!,
+          faq['question']?.toString() ?? 'No question',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.w600,
           ),
@@ -190,7 +231,7 @@ class _FaqScreenState extends State<FaqScreen> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                faq['answer']!,
+                faq['answer']?.toString() ?? 'No answer available',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white70,
                   height: 1.5,

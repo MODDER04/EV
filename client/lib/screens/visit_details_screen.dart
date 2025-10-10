@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/workshop_models.dart';
 import '../services/auth_service.dart';
+import '../utils/app_translations.dart';
 
 class VisitDetailsScreen extends StatefulWidget {
   final String visitType;
@@ -58,7 +59,7 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final isService = widget.visitType == 'service';
-    final title = isService ? 'Service Details' : 'Inspection Report';
+    final title = isService ? context.t.serviceDetails : context.t.inspectionReport;
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -158,7 +159,7 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isService ? _visitDetails!['service_type'] ?? 'Service' : 'Vehicle Inspection',
+                    isService ? _visitDetails!['service_type'] ?? context.t.brakeService : context.t.vehicleInspection,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -223,20 +224,20 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Service Details',
+              context.t.serviceDetails,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 16),
             if (_visitDetails!['description'] != null)
-              _buildDetailRow('Description', _visitDetails!['description']),
+              _buildDetailRow(context.t.description, _visitDetails!['description']),
             if (_visitDetails!['cost'] != null)
-              _buildDetailRow('Cost', '\$${_visitDetails!['cost'].toStringAsFixed(2)}'),
+              _buildDetailRow(context.t.cost, '\$${_visitDetails!['cost'].toStringAsFixed(2)}'),
             if (_visitDetails!['status'] != null)
-              _buildDetailRow('Status', _visitDetails!['status']),
+              _buildDetailRow(context.t.status, _visitDetails!['status']),
             if (_visitDetails!['created_at'] != null)
-              _buildDetailRow('Completed', _formatDate(_visitDetails!['created_at'])),
+              _buildDetailRow(context.t.completedOn, _formatDate(_visitDetails!['created_at'])),
           ],
         ),
       ),
@@ -257,16 +258,16 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Inspection Summary',
+                  context.t.inspectionSummary,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildDetailRow('Overall Condition', _visitDetails!['overall_condition'] ?? 'Unknown'),
+                _buildDetailRow(context.t.overallCondition, _visitDetails!['overall_condition'] ?? 'Unknown'),
                 if (_visitDetails!['recommendations'] != null)
-                  _buildDetailRow('Recommendations', _visitDetails!['recommendations']),
-                _buildDetailRow('Inspected', _formatDate(_visitDetails!['created_at'])),
+                  _buildDetailRow(context.t.recommendations, _visitDetails!['recommendations']),
+                _buildDetailRow(context.t.inspected, _formatDate(_visitDetails!['created_at'])),
               ],
             ),
           ),
@@ -289,7 +290,7 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Inspection Items',
+              context.t.inspectionItems,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -374,7 +375,7 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Technician Notes',
+                  context.t.technicianNotes,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/language_provider.dart';
-import '../app_localizations.dart';
+import '../l10n/app_localizations.dart';
 
 class LanguageSwitcher extends StatelessWidget {
   final bool showIcon;
@@ -67,7 +67,16 @@ class LanguageSwitcher extends StatelessWidget {
   }
   
   Widget _buildFullSwitcher(BuildContext context, LanguageProvider languageProvider) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    
+    if (l10n == null) {
+      return const Card(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      );
+    }
     
     return Card(
       child: Padding(
@@ -133,7 +142,15 @@ class LanguageButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
-        final l10n = AppLocalizations.of(context)!;
+        final l10n = AppLocalizations.of(context);
+        
+        if (l10n == null) {
+          return OutlinedButton.icon(
+            icon: const Icon(Icons.language),
+            label: const Text('Language'),
+            onPressed: null,
+          );
+        }
         
         return OutlinedButton.icon(
           icon: Icon(Icons.language),

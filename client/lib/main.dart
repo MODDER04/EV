@@ -7,7 +7,7 @@ import 'services/auth_service.dart';
 import 'providers/app_state.dart';
 import 'providers/auth_provider.dart';
 import 'providers/language_provider.dart';
-import 'app_localizations.dart';
+import 'l10n/app_localizations.dart';
 
 void main() {
   runApp(const EvMasterApp());

@@ -288,5 +288,225 @@
   "save": "Save",
   "@save": {
     "description": "Save button text"
+  },
+  
+  "home": "Home",
+  "@home": {
+    "description": "Home navigation label"
+  },
+  
+  "book": "Book",
+  "@book": {
+    "description": "Book navigation label"
+  },
+  
+  "faq": "FAQ",
+  "@faq": {
+    "description": "FAQ navigation label"
+  },
+  
+  "quickCheckin": "Quick Check-in",
+  "@quickCheckin": {
+    "description": "Quick check-in section title"
+  },
+  
+  "tapToCheckIn": "Tap to Check In",
+  "@tapToCheckIn": {
+    "description": "QR scanner card title"
+  },
+  
+  "letUsKnow": "Let us know you've arrived",
+  "@letUsKnow": {
+    "description": "QR scanner card description"
+  },
+  
+  "recentActivity": "Recent Activity",
+  "@recentActivity": {
+    "description": "Recent activity section title"
+  },
+  
+  "noVehiclesFound": "No vehicles found",
+  "@noVehiclesFound": {
+    "description": "No vehicles message"
+  },
+  
+  "contactWorkshop": "Contact the workshop to add vehicles to your account.",
+  "@contactWorkshop": {
+    "description": "Contact workshop message"
+  },
+  
+  "noRecentHistory": "No recent service history",
+  "@noRecentHistory": {
+    "description": "No service history message"
+  },
+  
+  "historyWillAppear": "Your service history will appear here after your first visit.",
+  "@historyWillAppear": {
+    "description": "Service history explanation"
+  },
+  
+  "welcomeBack": "Welcome back",
+  "@welcomeBack": {
+    "description": "Welcome back greeting"
+  },
+  
+  "bookAVisit": "Book a Visit",
+  "@bookAVisit": {
+    "description": "Book a visit page title"
+  },
+  
+  "selectDate": "Select Date",
+  "@selectDate": {
+    "description": "Select date section title"
+  },
+  
+  "selectTime": "Select Time",
+  "@selectTime": {
+    "description": "Select time section title"
+  },
+  
+  "searchFAQs": "Search FAQs",
+  "@searchFAQs": {
+    "description": "FAQ search placeholder"
+  },
+  
+  "commonQuestions": "Common Questions",
+  "@commonQuestions": {
+    "description": "Common questions section title"
+  },
+  
+  "whatTypesOfServices": "What types of services do you offer",
+  "@whatTypesOfServices": {
+    "description": "FAQ: What types of services"
+  },
+  
+  "howLongService": "How long does a typical service take",
+  "@howLongService": {
+    "description": "FAQ: How long does service take"
+  },
+  
+  "whatsIncluded": "What's included in a standard service",
+  "@whatsIncluded": {
+    "description": "FAQ: What's included in service"
+  },
+  
+  "howDoIBook": "How do I book a service",
+  "@howDoIBook": {
+    "description": "FAQ: How to book a service"
+  },
+  
+  "genuineParts": "Do you use genuine parts",
+  "@genuineParts": {
+    "description": "FAQ: Do you use genuine parts"
+  },
+  
+  "serviceStatistics": "Service Statistics",
+  "@serviceStatistics": {
+    "description": "Service statistics section title"
+  },
+  
+  "inspections": "Inspections",
+  "@inspections": {
+    "description": "Inspections counter label"
+  },
+  
+  "totalServicesCount": "Total Services",
+  "@totalServicesCount": {
+    "description": "Total services counter in stats"
+  },
+  
+  "lastServiceDate": "Last Service",
+  "@lastServiceDate": {
+    "description": "Last service date in stats"
+  },
+  
+  "lastInspectionDate": "Last Inspection",
+  "@lastInspectionDate": {
+    "description": "Last inspection date in stats"
+  },
+  
+  "overallCondition": "Overall Condition",
+  "@overallCondition": {
+    "description": "Overall condition label"
+  },
+  
+  "inspected": "Inspected",
+  "@inspected": {
+    "description": "Inspected status"
+  },
+  
+  "inspectionReport": "Inspection Report",
+  "@inspectionReport": {
+    "description": "Inspection report title"
+  },
+  
+  "inspectionSummary": "Inspection Summary",
+  "@inspectionSummary": {
+    "description": "Inspection summary section title"
+  },
+  
+  "recommendedActions": "Replace air filter within next 3 months, Check coolant level",
+  "@recommendedActions": {
+    "description": "Sample recommended actions"
+  },
+  
+  "engine": "Engine",
+  "@engine": {
+    "description": "Engine component label"
+  },
+  
+  "brakes": "Brakes",
+  "@brakes": {
+    "description": "Brakes component label"
+  },
+  
+  "tires": "Tires",
+  "@tires": {
+    "description": "Tires component label"
+  },
+  
+  "engineRunningSmooth": "Engine running smoothly, no unusual noises or vibrations",
+  "@engineRunningSmooth": {
+    "description": "Engine inspection note"
+  },
+  
+  "brakePadsInstalled": "New brake pads installed recently, good stopping power",
+  "@brakePadsInstalled": {
+    "description": "Brake inspection note"
+  },
+  
+  "treadDepth": "Tread depth is 6mm front/5mm rear",
+  "@treadDepth": {
+    "description": "Tire inspection note"
+  },
+  
+  "brakeService": "Brake Service",
+  "@brakeService": {
+    "description": "Brake service title"
+  },
+  
+  "description": "Description",
+  "@description": {
+    "description": "Description label"
+  },
+  
+  "replaceBrakePads": "Replace brake pads and check brake fluid levels",
+  "@replaceBrakePads": {
+    "description": "Brake service description"
+  },
+  
+  "completedOn": "Completed",
+  "@completedOn": {
+    "description": "Completed on label"
+  },
+  
+  "brakePadsWornDown": "Brake pads were worn down to 2mm. Replaced with new high-performance pads. Brake fluid topped up",
+  "@brakePadsWornDown": {
+    "description": "Technician notes for brake service"
+  },
+  
+  "color": "Color",
+  "@color": {
+    "description": "Color label"
   }
 }

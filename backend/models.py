@@ -88,3 +88,17 @@ class InspectionItem(Base):
     notes = Column(Text, nullable=True)
     
     report = relationship("InspectionReport", back_populates="items")
+
+class FAQ(Base):
+    __tablename__ = "faqs"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    question_en = Column(Text, nullable=False)  # Question in English
+    question_ar = Column(Text, nullable=False)  # Question in Arabic
+    answer_en = Column(Text, nullable=False)    # Answer in English
+    answer_ar = Column(Text, nullable=False)    # Answer in Arabic
+    category = Column(String, nullable=False)   # Category (Services, Booking, etc.)
+    display_order = Column(Integer, default=0)  # Order for display
+    is_active = Column(Boolean, default=True)   # Enable/disable FAQ
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

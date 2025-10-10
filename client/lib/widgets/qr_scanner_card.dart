@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/app_translations.dart';
 
 class QrScannerCard extends StatelessWidget {
   const QrScannerCard({super.key});
@@ -46,9 +47,9 @@ class QrScannerCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Tap to Check In',
-                style: TextStyle(
+              Text(
+                context.t.tapToCheckIn,
+                style: const TextStyle(
                   color: Colors.black,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -56,9 +57,9 @@ class QrScannerCard extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Let us know you\'ve arrived',
-                style: TextStyle(
+              Text(
+                context.t.letUsKnow,
+                style: const TextStyle(
                   color: Colors.black54,
                   fontSize: 14,
                 ),

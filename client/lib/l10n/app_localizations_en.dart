@@ -76,9 +76,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get vehicleInspection => 'Vehicle Inspection';
 
   @override
-  String overallCondition(String condition) {
-    return 'Overall condition: $condition';
-  }
+  String get overallCondition => 'Overall Condition';
 
   @override
   String get cost => 'Cost';
@@ -181,4 +179,140 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get save => 'Save';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get book => 'Book';
+
+  @override
+  String get faq => 'FAQ';
+
+  @override
+  String get quickCheckin => 'Quick Check-in';
+
+  @override
+  String get tapToCheckIn => 'Tap to Check In';
+
+  @override
+  String get letUsKnow => 'Let us know you\'ve arrived';
+
+  @override
+  String get recentActivity => 'Recent Activity';
+
+  @override
+  String get noVehiclesFound => 'No vehicles found';
+
+  @override
+  String get contactWorkshop =>
+      'Contact the workshop to add vehicles to your account.';
+
+  @override
+  String get noRecentHistory => 'No recent service history';
+
+  @override
+  String get historyWillAppear =>
+      'Your service history will appear here after your first visit.';
+
+  @override
+  String get welcomeBack => 'Welcome back';
+
+  @override
+  String get bookAVisit => 'Book a Visit';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get selectTime => 'Select Time';
+
+  @override
+  String get searchFAQs => 'Search FAQs';
+
+  @override
+  String get commonQuestions => 'Common Questions';
+
+  @override
+  String get whatTypesOfServices => 'What types of services do you offer';
+
+  @override
+  String get howLongService => 'How long does a typical service take';
+
+  @override
+  String get whatsIncluded => 'What\'s included in a standard service';
+
+  @override
+  String get howDoIBook => 'How do I book a service';
+
+  @override
+  String get genuineParts => 'Do you use genuine parts';
+
+  @override
+  String get serviceStatistics => 'Service Statistics';
+
+  @override
+  String get inspections => 'Inspections';
+
+  @override
+  String get totalServicesCount => 'Total Services';
+
+  @override
+  String get lastServiceDate => 'Last Service';
+
+  @override
+  String get lastInspectionDate => 'Last Inspection';
+
+  @override
+  String get inspected => 'Inspected';
+
+  @override
+  String get inspectionReport => 'Inspection Report';
+
+  @override
+  String get inspectionSummary => 'Inspection Summary';
+
+  @override
+  String get recommendedActions =>
+      'Replace air filter within next 3 months, Check coolant level';
+
+  @override
+  String get engine => 'Engine';
+
+  @override
+  String get brakes => 'Brakes';
+
+  @override
+  String get tires => 'Tires';
+
+  @override
+  String get engineRunningSmooth =>
+      'Engine running smoothly, no unusual noises or vibrations';
+
+  @override
+  String get brakePadsInstalled =>
+      'New brake pads installed recently, good stopping power';
+
+  @override
+  String get treadDepth => 'Tread depth is 6mm front/5mm rear';
+
+  @override
+  String get brakeService => 'Brake Service';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get replaceBrakePads =>
+      'Replace brake pads and check brake fluid levels';
+
+  @override
+  String get completedOn => 'Completed';
+
+  @override
+  String get brakePadsWornDown =>
+      'Brake pads were worn down to 2mm. Replaced with new high-performance pads. Brake fluid topped up';
+
+  @override
+  String get color => 'Color';
 }

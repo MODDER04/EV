@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
+import '../utils/app_translations.dart';
 import 'home_screen.dart';
 import 'booking_screen.dart';
 import 'faq_screen.dart';
@@ -40,26 +41,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             currentIndex: appState.currentIndex,
             onTap: (index) => appState.setCurrentIndex(index),
             type: BottomNavigationBarType.fixed,
-            items: const [
+            items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.home_outlined),
-                activeIcon: Icon(Icons.home),
-                label: 'Home',
+                icon: const Icon(Icons.home_outlined),
+                activeIcon: const Icon(Icons.home),
+                label: context.t.home,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_today_outlined),
-                activeIcon: Icon(Icons.calendar_today),
-                label: 'Book',
+                icon: const Icon(Icons.calendar_today_outlined),
+                activeIcon: const Icon(Icons.calendar_today),
+                label: context.t.book,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.help_outline),
-                activeIcon: Icon(Icons.help),
-                label: 'FAQ',
+                icon: const Icon(Icons.help_outline),
+                activeIcon: const Icon(Icons.help),
+                label: context.t.faq,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person_outline),
-                activeIcon: Icon(Icons.person),
-                label: 'Profile',
+                icon: const Icon(Icons.person_outline),
+                activeIcon: const Icon(Icons.person),
+                label: context.t.profile,
               ),
             ],
           ),

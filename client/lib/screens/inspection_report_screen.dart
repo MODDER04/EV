@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/workshop_models.dart';
 import '../providers/app_state.dart';
+import '../utils/app_translations.dart';
 
 class InspectionReportScreen extends StatelessWidget {
   final Vehicle vehicle;
@@ -15,7 +16,7 @@ class InspectionReportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Inspection Report'),
+        title: Text(context.t.inspectionReport),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
@@ -69,7 +70,7 @@ class InspectionReportScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Vehicle Information',
+          context.t.vehicleInspection,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -88,9 +89,9 @@ class InspectionReportScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInfoRow('Make', vehicle.make),
+                    _buildInfoRow(context.t.make, vehicle.make),
                     const SizedBox(height: 8),
-                    _buildInfoRow('Year', vehicle.year.toString()),
+                    _buildInfoRow(context.t.year, vehicle.year.toString()),
                   ],
                 ),
               ),
@@ -98,7 +99,7 @@ class InspectionReportScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInfoRow('Model', vehicle.model),
+                    _buildInfoRow(context.t.model, vehicle.model),
                     const SizedBox(height: 8),
                     _buildInfoRow('VIN', vehicle.vin ?? 'N/A'),
                   ],
@@ -142,18 +143,18 @@ class InspectionReportScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Inspection Results',
+          context.t.inspectionItems,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 16),
-        ...inspection.items.map((item) => _buildInspectionItem(item)),
+        ...inspection.items.map((item) => _buildInspectionItem(context, item)),
       ],
     );
   }
 
-  Widget _buildInspectionItem(InspectionItem item) {
+  Widget _buildInspectionItem(BuildContext context, InspectionItem item) {
     Color statusColor;
     IconData statusIcon;
     String statusText;
@@ -162,12 +163,12 @@ class InspectionReportScreen extends StatelessWidget {
       case 'good':
         statusColor = const Color(0xFF50C878);
         statusIcon = Icons.check_circle;
-        statusText = 'Good';
+        statusText = context.t.good;
         break;
       case 'needs_attention':
         statusColor = Colors.orange;
         statusIcon = Icons.warning;
-        statusText = 'Needs Attention';
+        statusText = context.t.needsAttention;
         break;
       case 'replace':
         statusColor = Colors.red;
@@ -253,7 +254,7 @@ class InspectionReportScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Technician Notes',
+          context.t.technicianNotes,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -291,7 +292,7 @@ class InspectionReportScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Recommendations',
+          context.t.recommendations,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),

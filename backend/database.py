@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, Client, ClientCode, Vehicle, ServiceRecord, InspectionReport, InspectionItem
+from models import Base, Client, ClientCode, Vehicle, ServiceRecord, InspectionReport, InspectionItem, FAQ
 import os
 from datetime import datetime
 import secrets
@@ -190,6 +190,60 @@ def create_sample_data(db):
     
     db.add_all(inspection_items)
     
+    # Create sample FAQs with both English and Arabic content
+    faqs = [
+        FAQ(
+            question_en="How do I book a service?",
+            question_ar="كيف أحجز خدمة؟",
+            answer_en="You can book a service through our app or website. Select your vehicle, choose the service, and pick a date and time.",
+            answer_ar="يمكنك حجز خدمة من خلال تطبيقنا أو موقعنا الإلكتروني. اختر مركبتك، اختر الخدمة، واختر التاريخ والوقت.",
+            category="Booking",
+            display_order=1
+        ),
+        FAQ(
+            question_en="What types of services do you offer?",
+            question_ar="ما أنواع الخدمات التي تقدمونها؟",
+            answer_en="We offer a comprehensive range of automotive services including oil changes, brake inspections, tire rotations, battery checks, and more.",
+            answer_ar="نحن نقدم مجموعة شاملة من الخدمات الآليّة بما في ذلك تغيير الزيت، وفحص الفرامل، ودوران الإطارات، وفحص البطارية، والمزيد.",
+            category="Services",
+            display_order=2
+        ),
+        FAQ(
+            question_en="How long does a typical service take?",
+            question_ar="كم يستغرق وقت الخدمة العادية؟",
+            answer_en="A standard service typically takes 1-2 hours depending on the specific services requested. We'll provide you with an estimated completion time when you book.",
+            answer_ar="الخدمة القياسية تستغرق عادة من ساعة إلى ساعتين اعتماداً على الخدمات المحددة المطلوبة. سنزودك بوقت مقدر للانتهاء عند الحجز.",
+            category="Services",
+            display_order=3
+        ),
+        FAQ(
+            question_en="Can I wait while my car is being serviced?",
+            question_ar="هل يمكنني الانتظار أثناء صيانة سيارتي؟",
+            answer_en="Yes, we have a comfortable waiting area with complimentary WiFi and refreshments. You can also choose to drop off your vehicle and pick it up later.",
+            answer_ar="نعم، لدينا منطقة انتظار مريحة مع واي فاي مجاني ومرطبات. يمكنك أيضاً اختيار ترك مركبتك واستلامها لاحقاً.",
+            category="General",
+            display_order=4
+        ),
+        FAQ(
+            question_en="Do you use genuine parts?",
+            question_ar="هل تستخدمون قطع غيار أصلية؟",
+            answer_en="Yes, we use only genuine OEM parts and high-quality aftermarket alternatives. All parts come with manufacturer warranties.",
+            answer_ar="نعم، نحن نستخدم فقط قطع غيار أصلية من المصنع وبدائل ما بعد البيع عالية الجودة. جميع القطع تأتي مع ضمانات الشركة المصنعة.",
+            category="Parts",
+            display_order=5
+        ),
+        FAQ(
+            question_en="What's included in a standard service?",
+            question_ar="ما الذي يشمله الخدمة القياسية؟",
+            answer_en="A standard service includes an oil change, filter replacement, and a general check-up of your vehicle's main components.",
+            answer_ar="الخدمة القياسية تشمل تغيير الزيت، واستبدال الفلتر، وفحص عام للمكونات الرئيسية لمركبتك.",
+            category="Services",
+            display_order=6
+        )
+    ]
+    
+    db.add_all(faqs)
+    
     # Commit all changes
     db.commit()
     print("✅ Sample data created successfully")
@@ -198,3 +252,4 @@ def create_sample_data(db):
     print(f"   • Created {len([vehicle1, vehicle2, vehicle3])} vehicles")
     print(f"   • Created {len([service1, service2])} service records")
     print(f"   • Created 1 inspection report with {len(inspection_items)} items")
+    print(f"   • Created {len(faqs)} multilingual FAQs")

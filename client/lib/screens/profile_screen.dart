@@ -3,14 +3,23 @@ import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/language_switcher.dart';
-import '../app_localizations.dart';
+import '../l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    
+    // Handle case where localizations are not yet available
+    if (l10n == null) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
     
     return Scaffold(
       appBar: AppBar(
@@ -310,7 +319,9 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showSignOutDialog(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context);
+    
+    if (l10n == null) return; // Don't show dialog if localizations aren't available
     
     showDialog(
       context: context,

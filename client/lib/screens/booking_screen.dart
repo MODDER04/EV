@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import '../providers/app_state.dart';
+import '../utils/app_translations.dart';
 
 class BookingScreen extends StatefulWidget {
   const BookingScreen({super.key});
@@ -48,7 +49,7 @@ class _BookingScreenState extends State<BookingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Book a Visit'),
+        title: Text(context.t.bookAVisit),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -57,7 +58,7 @@ class _BookingScreenState extends State<BookingScreen> {
           children: [
             // Date Selection
             Text(
-              'Select Date',
+              context.t.selectDate,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -119,7 +120,7 @@ class _BookingScreenState extends State<BookingScreen> {
 
             // Time Selection
             Text(
-              'Select Time',
+              context.t.selectTime,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),

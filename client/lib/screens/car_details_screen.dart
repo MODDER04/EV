@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/workshop_models.dart';
 import '../services/auth_service.dart';
 import 'visit_details_screen.dart';
-import '../app_localizations.dart';
+import '../l10n/app_localizations.dart';
+import '../utils/app_translations.dart';
 
 class CarDetailsScreen extends StatefulWidget {
   final Vehicle vehicle;
@@ -171,10 +172,10 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            _buildInfoRow('Color', widget.vehicle.color ?? 'Not specified'),
+            _buildInfoRow(context.t.color, widget.vehicle.color ?? 'Not specified'),
             if (widget.vehicle.vin != null)
               _buildInfoRow('VIN', widget.vehicle.vin!),
-            _buildInfoRow('License Plate', widget.vehicle.licensePlate),
+            _buildInfoRow(context.t.licensePlate, widget.vehicle.licensePlate),
           ],
         ),
       ),
@@ -221,7 +222,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Service Statistics',
+              context.t.serviceStatistics,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -231,7 +232,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               children: [
                 Expanded(
                   child: _buildStatItem(
-                    'Total Services',
+                    context.t.totalServicesCount,
                     '${stats['total_services'] ?? 0}',
                     Icons.build,
                     Colors.blue,
@@ -239,7 +240,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                 ),
                 Expanded(
                   child: _buildStatItem(
-                    'Inspections',
+                    context.t.inspections,
                     '${stats['total_inspections'] ?? 0}',
                     Icons.search,
                     Colors.green,
@@ -250,14 +251,14 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
             if (stats['last_service_date'] != null) ...[
               const SizedBox(height: 16),
               _buildInfoRow(
-                'Last Service',
+                context.t.lastServiceDate,
                 _formatDate(stats['last_service_date']),
               ),
             ],
             if (stats['last_inspection_date'] != null) ...[
               const SizedBox(height: 8),
               _buildInfoRow(
-                'Last Inspection',
+                context.t.lastInspectionDate,
                 _formatDate(stats['last_inspection_date']),
               ),
             ],
@@ -303,7 +304,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Visit History',
+          context.t.visitHistory,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -323,12 +324,12 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'No visit history found',
+                      context.t.noVisitHistory,
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Service and inspection records will appear here.',
+                      context.t.serviceInspectionRecords,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey[400],
                       ),

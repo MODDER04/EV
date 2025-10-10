@@ -288,5 +288,225 @@
   "save": "حفظ",
   "@save": {
     "description": "Save button text"
+  },
+  
+  "home": "الرئيسية",
+  "@home": {
+    "description": "Home navigation label"
+  },
+  
+  "book": "احجز",
+  "@book": {
+    "description": "Book navigation label"
+  },
+  
+  "faq": "الأسئلة الشائعة",
+  "@faq": {
+    "description": "FAQ navigation label"
+  },
+  
+  "quickCheckin": "تسجيل دخول سريع",
+  "@quickCheckin": {
+    "description": "Quick check-in section title"
+  },
+  
+  "tapToCheckIn": "اضغط لتسجيل الدخول",
+  "@tapToCheckIn": {
+    "description": "QR scanner card title"
+  },
+  
+  "letUsKnow": "أعلمنا بوصولك",
+  "@letUsKnow": {
+    "description": "QR scanner card description"
+  },
+  
+  "recentActivity": "النشاط الأخير",
+  "@recentActivity": {
+    "description": "Recent activity section title"
+  },
+  
+  "noVehiclesFound": "لم يتم العثور على مركبات",
+  "@noVehiclesFound": {
+    "description": "No vehicles message"
+  },
+  
+  "contactWorkshop": "اتصل بالورشة لإضافة مركبات إلى حسابك.",
+  "@contactWorkshop": {
+    "description": "Contact workshop message"
+  },
+  
+  "noRecentHistory": "لا يوجد سجل خدمة حديث",
+  "@noRecentHistory": {
+    "description": "No service history message"
+  },
+  
+  "historyWillAppear": "سيظهر سجل الخدمة هنا بعد زيارتك الأولى.",
+  "@historyWillAppear": {
+    "description": "Service history explanation"
+  },
+  
+  "welcomeBack": "مرحباً بعودتك",
+  "@welcomeBack": {
+    "description": "Welcome back greeting"
+  },
+  
+  "bookAVisit": "احجز زيارة",
+  "@bookAVisit": {
+    "description": "Book a visit page title"
+  },
+  
+  "selectDate": "اختر التاريخ",
+  "@selectDate": {
+    "description": "Select date section title"
+  },
+  
+  "selectTime": "اختر الوقت",
+  "@selectTime": {
+    "description": "Select time section title"
+  },
+  
+  "searchFAQs": "البحث في الأسئلة الشائعة",
+  "@searchFAQs": {
+    "description": "FAQ search placeholder"
+  },
+  
+  "commonQuestions": "الأسئلة الشائعة",
+  "@commonQuestions": {
+    "description": "Common questions section title"
+  },
+  
+  "whatTypesOfServices": "ما أنواع الخدمات التي تقدمونها",
+  "@whatTypesOfServices": {
+    "description": "FAQ: What types of services"
+  },
+  
+  "howLongService": "كم يستغرق الوقت للخدمة العادية",
+  "@howLongService": {
+    "description": "FAQ: How long does service take"
+  },
+  
+  "whatsIncluded": "ما الذي يشمله الخدمة القياسية",
+  "@whatsIncluded": {
+    "description": "FAQ: What's included in service"
+  },
+  
+  "howDoIBook": "كيف أحجز خدمة",
+  "@howDoIBook": {
+    "description": "FAQ: How to book a service"
+  },
+  
+  "genuineParts": "هل تستخدمون قطع غيار أصلية",
+  "@genuineParts": {
+    "description": "FAQ: Do you use genuine parts"
+  },
+  
+  "serviceStatistics": "إحصائيات الخدمة",
+  "@serviceStatistics": {
+    "description": "Service statistics section title"
+  },
+  
+  "inspections": "الفحوصات",
+  "@inspections": {
+    "description": "Inspections counter label"
+  },
+  
+  "totalServicesCount": "إجمالي الخدمات",
+  "@totalServicesCount": {
+    "description": "Total services counter in stats"
+  },
+  
+  "lastServiceDate": "آخر خدمة",
+  "@lastServiceDate": {
+    "description": "Last service date in stats"
+  },
+  
+  "lastInspectionDate": "آخر فحص",
+  "@lastInspectionDate": {
+    "description": "Last inspection date in stats"
+  },
+  
+  "overallCondition": "الحالة العامة",
+  "@overallCondition": {
+    "description": "Overall condition label"
+  },
+  
+  "inspected": "تم الفحص",
+  "@inspected": {
+    "description": "Inspected status"
+  },
+  
+  "inspectionReport": "تقرير الفحص",
+  "@inspectionReport": {
+    "description": "Inspection report title"
+  },
+  
+  "inspectionSummary": "ملخص الفحص",
+  "@inspectionSummary": {
+    "description": "Inspection summary section title"
+  },
+  
+  "recommendedActions": "استبدال فلتر الهواء خلال الأشهر الثلاثة القادمة، فحص مستوى سائل التبريد",
+  "@recommendedActions": {
+    "description": "Sample recommended actions"
+  },
+  
+  "engine": "المحرك",
+  "@engine": {
+    "description": "Engine component label"
+  },
+  
+  "brakes": "الفرامل",
+  "@brakes": {
+    "description": "Brakes component label"
+  },
+  
+  "tires": "الإطارات",
+  "@tires": {
+    "description": "Tires component label"
+  },
+  
+  "engineRunningSmooth": "المحرك يعمل بسلاسة، لا توجد أصوات أو اهتزازات غير عادية",
+  "@engineRunningSmooth": {
+    "description": "Engine inspection note"
+  },
+  
+  "brakePadsInstalled": "تم تركيب تيل فرامل جديد مؤخراً، قوة توقف جيدة",
+  "@brakePadsInstalled": {
+    "description": "Brake inspection note"
+  },
+  
+  "treadDepth": "عمق المداس 6 ملم أمامي/5 ملم خلفي",
+  "@treadDepth": {
+    "description": "Tire inspection note"
+  },
+  
+  "brakeService": "خدمة الفرامل",
+  "@brakeService": {
+    "description": "Brake service title"
+  },
+  
+  "description": "الوصف",
+  "@description": {
+    "description": "Description label"
+  },
+  
+  "replaceBrakePads": "استبدال تيل الفرامل وفحص مستوى سائل الفرامل",
+  "@replaceBrakePads": {
+    "description": "Brake service description"
+  },
+  
+  "completedOn": "مكتمل",
+  "@completedOn": {
+    "description": "Completed on label"
+  },
+  
+  "brakePadsWornDown": "كان تيل الفرامل مستهلك إلى 2 ملم. تم الاستبدال بتيل عالي الأداء. تم تعبئة سائل الفرامل",
+  "@brakePadsWornDown": {
+    "description": "Technician notes for brake service"
+  },
+  
+  "color": "اللون",
+  "@color": {
+    "description": "Color label"
   }
 }

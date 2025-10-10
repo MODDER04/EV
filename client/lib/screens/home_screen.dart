@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/app_state.dart';
 import '../widgets/qr_scanner_card.dart';
 import '../widgets/vehicle_card.dart';
+import '../utils/app_translations.dart';
 import 'car_details_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -34,7 +35,7 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                       if (appState.currentClient != null)
                         Text(
-                          'Welcome back, ${appState.currentClient!.name.split(' ').first}!',
+                          '${context.t.welcomeBack}, ${appState.currentClient!.name.split(' ').first}!',
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: Theme.of(context).colorScheme.primary,
                           ),
@@ -47,7 +48,7 @@ class HomeScreen extends StatelessWidget {
               
               // Quick Check-in Section
               Text(
-                'Quick Check-in',
+                context.t.quickCheckin,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -58,7 +59,7 @@ class HomeScreen extends StatelessWidget {
               
               // My Cars Section
               Text(
-                'My Cars',
+                context.t.myCars,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -68,14 +69,14 @@ class HomeScreen extends StatelessWidget {
                 builder: (context, appState, child) {
                   // Show loading state
                   if (appState.isLoading) {
-                    return const Center(
+                    return Center(
                       child: Padding(
-                        padding: EdgeInsets.all(32.0),
+                        padding: const EdgeInsets.all(32.0),
                         child: Column(
                           children: [
-                            CircularProgressIndicator(),
-                            SizedBox(height: 16),
-                            Text('Loading your vehicles...'),
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16),
+                            Text(context.t.loading),
                           ],
                         ),
                       ),
@@ -92,7 +93,7 @@ class HomeScreen extends StatelessWidget {
                             Icon(Icons.error_outline, size: 48, color: Colors.red),
                             const SizedBox(height: 16),
                             Text(
-                              'Error loading data',
+                              context.t.error,
                               style: Theme.of(context).textTheme.titleMedium,
                             ),
                             const SizedBox(height: 8),
@@ -104,7 +105,7 @@ class HomeScreen extends StatelessWidget {
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: () => appState.retryLoadData(),
-                              child: const Text('Retry'),
+                              child: Text(context.t.retry),
                             ),
                           ],
                         ),
@@ -114,19 +115,19 @@ class HomeScreen extends StatelessWidget {
                   
                   // Show empty state
                   if (appState.vehicles.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Padding(
-                        padding: EdgeInsets.all(32.0),
+                        padding: const EdgeInsets.all(32.0),
                         child: Column(
                           children: [
-                            Icon(Icons.directions_car_outlined, size: 48, color: Colors.grey),
-                            SizedBox(height: 16),
-                            Text('No vehicles found'),
-                            SizedBox(height: 8),
+                            const Icon(Icons.directions_car_outlined, size: 48, color: Colors.grey),
+                            const SizedBox(height: 16),
+                            Text(context.t.noVehiclesFound),
+                            const SizedBox(height: 8),
                             Text(
-                              'Contact the workshop to add vehicles to your account.',
+                              context.t.contactWorkshop,
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.grey),
+                              style: const TextStyle(color: Colors.grey),
                             ),
                           ],
                         ),
@@ -168,7 +169,7 @@ class HomeScreen extends StatelessWidget {
               
               // Recent Activity Section
               Text(
-                'Recent Activity',
+                context.t.recentActivity,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -177,22 +178,22 @@ class HomeScreen extends StatelessWidget {
               Consumer<AppState>(
                 builder: (context, appState, child) {
                   if (appState.serviceHistory.isEmpty) {
-                    return const Card(
+                    return Card(
                       child: Padding(
-                        padding: EdgeInsets.all(24.0),
+                        padding: const EdgeInsets.all(24.0),
                         child: Column(
                           children: [
-                            Icon(Icons.history, size: 48, color: Colors.grey),
-                            SizedBox(height: 16),
+                            const Icon(Icons.history, size: 48, color: Colors.grey),
+                            const SizedBox(height: 16),
                             Text(
-                              'No recent service history',
-                              style: TextStyle(fontWeight: FontWeight.w500),
+                              context.t.noRecentHistory,
+                              style: const TextStyle(fontWeight: FontWeight.w500),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
-                              'Your service history will appear here after your first visit.',
+                              context.t.historyWillAppear,
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.grey, fontSize: 12),
+                              style: const TextStyle(color: Colors.grey, fontSize: 12),
                             ),
                           ],
                         ),
