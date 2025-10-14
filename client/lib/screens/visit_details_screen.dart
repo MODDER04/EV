@@ -125,6 +125,8 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
           const SizedBox(height: 20),
           if (isService) _buildServiceDetailsCard() else _buildInspectionDetailsCard(),
           const SizedBox(height: 20),
+          if (isService && _hasLinkedInspection()) _buildLinkedInspectionCard(),
+          const SizedBox(height: 20),
           if (_visitDetails!['technician_notes'] != null) _buildNotesCard(),
         ],
       ),
@@ -159,7 +161,7 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isService ? _visitDetails!['service_type'] ?? context.t.brakeService : context.t.vehicleInspection,
+                    isService ? _getServiceTitle() : context.t.vehicleInspection,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -215,6 +217,48 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
   }
 
   Widget _buildServiceDetailsCard() {
+    final serviceItems = _visitDetails!['service_items'] as List<dynamic>? ?? [];
+
+    return Column(
+      children: [
+        // Service Summary Card
+        Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.t.serviceDetails,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                if (_visitDetails!['description'] != null)
+                  _buildDetailRow(context.t.description, _visitDetails!['description']),
+                if (_visitDetails!['cost'] != null)
+                  _buildDetailRow(context.t.cost, '\$${_visitDetails!['cost'].toStringAsFixed(2)}'),
+                if (_visitDetails!['status'] != null)
+                  _buildDetailRow(context.t.status, _visitDetails!['status']),
+                if (_visitDetails!['created_at'] != null)
+                  _buildDetailRow(context.t.completedOn, _formatDate(_visitDetails!['created_at'])),
+              ],
+            ),
+          ),
+        ),
+        // Service Items List Card
+        if (serviceItems.isNotEmpty) ...[
+          const SizedBox(height: 20),
+          _buildServiceItemsCard(serviceItems),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildServiceItemsCard(List<dynamic> serviceItems) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -223,23 +267,93 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              context.t.serviceDetails,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            Row(
+              children: [
+                Icon(
+                  Icons.build,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Services Performed (${serviceItems.length})',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...serviceItems.map((item) => _buildServiceItem(item)).toList(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildServiceItem(Map<String, dynamic> item) {
+    final serviceName = item['service_name'] as String? ?? 'Unknown Service';
+    final price = item['price'] as num? ?? 0;
+    final description = item['description'] as String?;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.build, color: Colors.blue, size: 18),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  serviceName,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                if (description != null && description.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    description,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.green.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              '\$${price.toStringAsFixed(2)}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.green[700],
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
-            if (_visitDetails!['description'] != null)
-              _buildDetailRow(context.t.description, _visitDetails!['description']),
-            if (_visitDetails!['cost'] != null)
-              _buildDetailRow(context.t.cost, '\$${_visitDetails!['cost'].toStringAsFixed(2)}'),
-            if (_visitDetails!['status'] != null)
-              _buildDetailRow(context.t.status, _visitDetails!['status']),
-            if (_visitDetails!['created_at'] != null)
-              _buildDetailRow(context.t.completedOn, _formatDate(_visitDetails!['created_at'])),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -480,6 +594,112 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
       default:
         return Icons.info;
     }
+  }
+
+  bool _hasLinkedInspection() {
+    return _visitDetails!['linked_inspection'] != null;
+  }
+
+  Widget _buildLinkedInspectionCard() {
+    final linkedInspection = _visitDetails!['linked_inspection'] as Map<String, dynamic>;
+    final inspectionId = linkedInspection['inspection_id'] as String;
+    final overallCondition = linkedInspection['overall_condition'] as String? ?? 'Unknown';
+    
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.search,
+                  color: Colors.green,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Vehicle Inspection Report',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.green.withOpacity(0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Overall Condition:',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      _buildStatusChip(overallCondition),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                          '/visit-details',
+                          arguments: {
+                            'visitType': 'inspection',
+                            'visitId': inspectionId,
+                            'vehicle': widget.vehicle,
+                          },
+                        );
+                      },
+                      icon: const Icon(Icons.search, size: 18),
+                      label: const Text('View Full Inspection Report'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getServiceTitle() {
+    final serviceItems = _visitDetails!['service_items'] as List<dynamic>? ?? [];
+    
+    if (serviceItems.isEmpty) {
+      return _visitDetails!['service_type'] ?? 'Service';
+    }
+    
+    if (serviceItems.length == 1) {
+      return serviceItems.first['service_name'] ?? 'Service';
+    }
+    
+    return 'Multiple Services (${serviceItems.length})';
   }
 
   String _formatDate(String? dateString) {

@@ -1,0 +1,1 @@
+export { VehiclesManager as default } from './index';

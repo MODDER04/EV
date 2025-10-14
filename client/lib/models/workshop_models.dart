@@ -76,25 +76,57 @@ class Vehicle {
   String get displayName => '$make $model ($year)';
 }
 
+class ServiceItem {
+  final String serviceType;
+  final String serviceName;
+  final String? description;
+  final double price;
+
+  ServiceItem({
+    required this.serviceType,
+    required this.serviceName,
+    this.description,
+    required this.price,
+  });
+
+  factory ServiceItem.fromJson(Map<String, dynamic> json) {
+    return ServiceItem(
+      serviceType: json['service_type'],
+      serviceName: json['service_name'],
+      description: json['description'],
+      price: (json['price'] as num).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'service_type': serviceType,
+      'service_name': serviceName,
+      'description': description,
+      'price': price,
+    };
+  }
+
+  String get formattedPrice => '\$${price.toStringAsFixed(2)}';
+}
+
 class ServiceRecord {
   final String serviceId;
   final String carId;
   final DateTime date;
-  final String serviceType;
-  final String description;
-  final double cost;
   final String status;
   final String? technicianNotes;
+  final double totalCost;
+  final List<ServiceItem> serviceItems;
 
   ServiceRecord({
     required this.serviceId,
     required this.carId,
     required this.date,
-    required this.serviceType,
-    required this.description,
-    required this.cost,
     required this.status,
     this.technicianNotes,
+    required this.totalCost,
+    required this.serviceItems,
   });
 
   factory ServiceRecord.fromJson(Map<String, dynamic> json) {
@@ -102,11 +134,12 @@ class ServiceRecord {
       serviceId: json['service_id'],
       carId: json['car_id'],
       date: DateTime.parse(json['date']),
-      serviceType: json['service_type'],
-      description: json['description'],
-      cost: (json['cost'] as num).toDouble(),
       status: json['status'],
       technicianNotes: json['technician_notes'],
+      totalCost: (json['cost'] as num).toDouble(),
+      serviceItems: (json['service_items'] as List<dynamic>? ?? [])
+          .map((item) => ServiceItem.fromJson(item))
+          .toList(),
     );
   }
 
@@ -115,15 +148,16 @@ class ServiceRecord {
       'service_id': serviceId,
       'car_id': carId,
       'date': date.toIso8601String(),
-      'service_type': serviceType,
-      'description': description,
-      'cost': cost,
       'status': status,
       'technician_notes': technicianNotes,
+      'cost': totalCost,
+      'service_items': serviceItems.map((item) => item.toJson()).toList(),
     };
   }
 
-  String get formattedCost => '\$${cost.toStringAsFixed(2)}';
+  String get formattedCost => '\$${totalCost.toStringAsFixed(2)}';
+  String get serviceType => serviceItems.map((item) => item.serviceName).join(', ');
+  String get description => '${serviceItems.length} service${serviceItems.length != 1 ? 's' : ''}: $serviceType';
 }
 
 class InspectionReport {

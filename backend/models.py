@@ -54,15 +54,29 @@ class ServiceRecord(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     vehicle_id = Column(Integer, ForeignKey("vehicles.id"), nullable=False)
-    service_type = Column(String, nullable=False)
-    description = Column(Text, nullable=True)
-    cost = Column(Float, nullable=False)
     service_date = Column(DateTime, nullable=False)
     status = Column(String, default="completed")  # pending, in_progress, completed
     technician_notes = Column(Text, nullable=True)
+    total_cost = Column(Float, nullable=False, default=0.0)
+    linked_inspection_id = Column(Integer, ForeignKey("inspection_reports.id"), nullable=True)  # Link to inspection if service includes inspection
     created_at = Column(DateTime, default=datetime.utcnow)
     
     vehicle = relationship("Vehicle", back_populates="services")
+    service_items = relationship("ServiceItem", back_populates="service_record", cascade="all, delete-orphan")
+    linked_inspection = relationship("InspectionReport", post_update=True, foreign_keys=[linked_inspection_id])
+
+class ServiceItem(Base):
+    __tablename__ = "service_items"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    service_record_id = Column(Integer, ForeignKey("service_records.id"), nullable=False)
+    service_type = Column(String, nullable=False)  # oil_change, brake_check, tire_rotation, inspection, etc.
+    service_name = Column(String, nullable=False)  # Display name for the service
+    description = Column(Text, nullable=True)
+    price = Column(Float, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    
+    service_record = relationship("ServiceRecord", back_populates="service_items")
 
 class InspectionReport(Base):
     __tablename__ = "inspection_reports"
@@ -73,10 +87,12 @@ class InspectionReport(Base):
     overall_condition = Column(String, nullable=False)  # excellent, good, fair, poor
     technician_notes = Column(Text, nullable=True)
     recommendations = Column(Text, nullable=True)
+    linked_service_record_id = Column(Integer, ForeignKey("service_records.id"), nullable=True)  # Link to service if inspection was part of service
     created_at = Column(DateTime, default=datetime.utcnow)
     
     vehicle = relationship("Vehicle", back_populates="inspections")
     items = relationship("InspectionItem", back_populates="report")
+    linked_service = relationship("ServiceRecord", post_update=True, foreign_keys=[linked_service_record_id])
 
 class InspectionItem(Base):
     __tablename__ = "inspection_items"

@@ -1,0 +1,1 @@
+export { CodesManager as default } from './index';

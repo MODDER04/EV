@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 
 class ApiConfig {
   // MacBook IP address for physical device testing
-  static const String _macBookIP = '192.168.100.126';
+  static const String _macBookIP = '192.168.100.190';
   
   static String get baseUrl {
     String url;

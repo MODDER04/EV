@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, Client, ClientCode, Vehicle, ServiceRecord, InspectionReport, InspectionItem, FAQ
+from models import Base, Client, ClientCode, Vehicle, ServiceRecord, ServiceItem, InspectionReport, InspectionItem, FAQ
 import os
 from datetime import datetime
 import secrets
@@ -12,7 +12,11 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./evmaster_workshop.db")
 # Create engine
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+    connect_args={
+        "check_same_thread": False,
+        "timeout": 20,
+        "isolation_level": None
+    } if "sqlite" in DATABASE_URL else {}
 )
 
 # Create session factory
@@ -125,28 +129,91 @@ def create_sample_data(db):
     db.add_all([vehicle1, vehicle2, vehicle3])
     db.flush()
     
-    # Create sample service records
+    # Create sample service records with service items
     service1 = ServiceRecord(
         vehicle_id=vehicle1.id,
-        service_type="Oil Change",
-        description="Replace engine oil and filter",
-        cost=150.0,
         service_date=datetime(2023, 12, 1),
         status="completed",
-        technician_notes="All systems running smoothly"
+        technician_notes="All systems running smoothly",
+        total_cost=200.0
     )
     
     service2 = ServiceRecord(
         vehicle_id=vehicle1.id,
-        service_type="Tire Rotation",
-        description="Rotate tires for even wear",
-        cost=75.0,
         service_date=datetime(2023, 10, 15),
         status="completed",
-        technician_notes="Tires in good condition"
+        technician_notes="Tires in good condition",
+        total_cost=150.0
     )
     
-    db.add_all([service1, service2])
+    service3 = ServiceRecord(
+        vehicle_id=vehicle2.id,
+        service_date=datetime(2023, 11, 20),
+        status="completed",
+        technician_notes="Comprehensive inspection and service",
+        total_cost=350.0
+    )
+    
+    db.add_all([service1, service2, service3])
+    db.flush()  # Get service record IDs
+    
+    # Create service items
+    service_items = [
+        # Service 1 items
+        ServiceItem(
+            service_record_id=service1.id,
+            service_type="oil_change",
+            service_name="Oil Change",
+            description="Replace engine oil and filter",
+            price=120.0
+        ),
+        ServiceItem(
+            service_record_id=service1.id,
+            service_type="inspection",
+            service_name="Vehicle Inspection",
+            description="Comprehensive vehicle safety inspection",
+            price=80.0
+        ),
+        # Service 2 items
+        ServiceItem(
+            service_record_id=service2.id,
+            service_type="tire_rotation",
+            service_name="Tire Rotation",
+            description="Rotate tires for even wear",
+            price=60.0
+        ),
+        ServiceItem(
+            service_record_id=service2.id,
+            service_type="brake_check",
+            service_name="Brake Check",
+            description="Check brake pads and brake fluid",
+            price=90.0
+        ),
+        # Service 3 items
+        ServiceItem(
+            service_record_id=service3.id,
+            service_type="oil_change",
+            service_name="Premium Oil Change",
+            description="Premium synthetic oil change with filter",
+            price=180.0
+        ),
+        ServiceItem(
+            service_record_id=service3.id,
+            service_type="inspection",
+            service_name="Full Vehicle Inspection",
+            description="Complete 50-point inspection",
+            price=120.0
+        ),
+        ServiceItem(
+            service_record_id=service3.id,
+            service_type="battery_check",
+            service_name="Battery Test",
+            description="Test battery health and charging system",
+            price=50.0
+        )
+    ]
+    
+    db.add_all(service_items)
     
     # Create sample inspection report
     inspection = InspectionReport(
@@ -250,6 +317,6 @@ def create_sample_data(db):
     print(f"   • Created {len([client1, client2])} clients")
     print(f"   • Created {len([code1, code2])} client codes")  
     print(f"   • Created {len([vehicle1, vehicle2, vehicle3])} vehicles")
-    print(f"   • Created {len([service1, service2])} service records")
+    print(f"   • Created {len([service1, service2, service3])} service records with {len(service_items)} service items")
     print(f"   • Created 1 inspection report with {len(inspection_items)} items")
     print(f"   • Created {len(faqs)} multilingual FAQs")

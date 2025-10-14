@@ -11,7 +11,7 @@ import uvicorn
 import os
 
 from database import init_db, get_db, create_sample_data, SessionLocal
-from models import ClientCode, Client, Vehicle, ServiceRecord as DBServiceRecord, InspectionReport, InspectionItem, FAQ
+from models import ClientCode, Client, Vehicle, ServiceRecord as DBServiceRecord, ServiceItem, InspectionReport, InspectionItem, FAQ
 from admin_routes import admin_router
 
 app = FastAPI(
@@ -214,24 +214,43 @@ async def get_car_service_history(
             detail="Vehicle not found"
         )
     
-    # Get service records for this vehicle
+    # Get service records for this vehicle with service items
     service_records = db.query(DBServiceRecord).filter(
         DBServiceRecord.vehicle_id == vehicle.id
     ).order_by(DBServiceRecord.service_date.desc()).all()
     
-    return [
-        {
+    result = []
+    for record in service_records:
+        # Get service items for this record
+        service_items = db.query(ServiceItem).filter(
+            ServiceItem.service_record_id == record.id
+        ).all()
+        
+        # Create service type summary from items
+        service_types = [item.service_name for item in service_items]
+        service_type_summary = ", ".join(service_types) if service_types else "General Service"
+        
+        result.append({
             "service_id": str(record.id),
             "car_id": str(record.vehicle_id),
             "date": record.service_date.isoformat(),
-            "service_type": record.service_type,
-            "description": record.description,
-            "cost": float(record.cost),
+            "service_type": service_type_summary,
+            "description": f"{len(service_items)} service(s): {service_type_summary}",
+            "cost": float(record.total_cost),
             "status": record.status,
-            "technician_notes": record.technician_notes
-        }
-        for record in service_records
-    ]
+            "technician_notes": record.technician_notes,
+            "service_items": [
+                {
+                    "service_type": item.service_type,
+                    "service_name": item.service_name,
+                    "description": item.description,
+                    "price": float(item.price)
+                }
+                for item in service_items
+            ]
+        })
+    
+    return result
 
 @app.get("/client/cars/{car_id}/visits")
 async def get_car_visit_history(
@@ -260,14 +279,23 @@ async def get_car_visit_history(
     ).all()
     
     for record in service_records:
+        # Get service items for this record
+        service_items = db.query(ServiceItem).filter(
+            ServiceItem.service_record_id == record.id
+        ).all()
+        
+        # Create service type summary from items
+        service_types = [item.service_name for item in service_items]
+        service_title = ", ".join(service_types) if service_types else "General Service"
+        
         visits.append({
             "visit_id": str(record.id),
             "visit_type": "service",
             "date": record.service_date.isoformat(),
-            "title": record.service_type,
-            "description": record.description,
+            "title": service_title,
+            "description": f"{len(service_items)} service(s) performed",
             "status": record.status,
-            "cost": float(record.cost) if record.cost else None,
+            "cost": float(record.total_cost) if record.total_cost else None,
             "technician_notes": record.technician_notes
         })
     
@@ -325,6 +353,28 @@ async def get_visit_details(
                 detail="Vehicle not found"
             )
         
+        # Get service items for this record
+        service_items = db.query(ServiceItem).filter(
+            ServiceItem.service_record_id == service_record.id
+        ).all()
+        
+        # Create service type summary from items
+        service_types = [item.service_name for item in service_items]
+        service_type_summary = ", ".join(service_types) if service_types else "General Service"
+        
+        # Check for linked inspection
+        linked_inspection = None
+        if service_record.linked_inspection_id:
+            inspection = db.query(InspectionReport).filter(
+                InspectionReport.id == service_record.linked_inspection_id
+            ).first()
+            if inspection:
+                linked_inspection = {
+                    "inspection_id": str(inspection.id),
+                    "overall_condition": inspection.overall_condition,
+                    "recommendations": inspection.recommendations
+                }
+        
         return {
             "visit_id": str(service_record.id),
             "visit_type": "service",
@@ -335,12 +385,22 @@ async def get_visit_details(
                 "license_plate": vehicle.license_plate
             },
             "date": service_record.service_date.isoformat(),
-            "service_type": service_record.service_type,
-            "description": service_record.description,
-            "cost": float(service_record.cost),
+            "service_type": service_type_summary,
+            "description": f"{len(service_items)} service(s): {service_type_summary}",
+            "cost": float(service_record.total_cost),
             "status": service_record.status,
             "technician_notes": service_record.technician_notes,
-            "created_at": service_record.created_at.isoformat()
+            "created_at": service_record.created_at.isoformat(),
+            "linked_inspection": linked_inspection,
+            "service_items": [
+                {
+                    "service_type": item.service_type,
+                    "service_name": item.service_name,
+                    "description": item.description,
+                    "price": float(item.price)
+                }
+                for item in service_items
+            ]
         }
     
     elif visit_type == "inspection":
@@ -620,17 +680,49 @@ async def get_all_inspections(db: Session = Depends(get_db)):
     
     result = []
     for inspection in inspections:
+        # Get inspection items
+        items = db.query(InspectionItem).filter(
+            InspectionItem.inspection_id == inspection.id
+        ).all()
+        
         result.append({
             "id": inspection.id,
             "vehicle_id": inspection.vehicle_id,
-            "vehicle_info": f"{inspection.vehicle.make} {inspection.vehicle.model} ({inspection.vehicle.license_plate})",
-            "client_name": inspection.vehicle.owner.name,
-            "client_id": inspection.vehicle.client_id,
             "inspection_date": inspection.inspection_date.isoformat(),
-            "overall_condition": inspection.overall_condition,
-            "technician_notes": inspection.technician_notes,
-            "recommendations": inspection.recommendations,
-            "created_at": inspection.created_at.isoformat()
+            "overall_status": inspection.overall_condition,
+            "notes": inspection.technician_notes,
+            "created_at": inspection.created_at.isoformat(),
+            "updated_at": inspection.created_at.isoformat(),  # Use created_at since updated_at doesn't exist
+            "vehicle": {
+                "id": inspection.vehicle.id,
+                "make": inspection.vehicle.make,
+                "model": inspection.vehicle.model,
+                "year": inspection.vehicle.year,
+                "license_plate": inspection.vehicle.license_plate,
+                "vin": inspection.vehicle.vin,
+                "color": inspection.vehicle.color,
+                "client_id": inspection.vehicle.client_id,
+                "created_at": inspection.vehicle.created_at.isoformat(),
+                "updated_at": inspection.vehicle.created_at.isoformat(),  # Use created_at since updated_at doesn't exist
+                "client": {
+                    "id": inspection.vehicle.owner.id,
+                    "name": inspection.vehicle.owner.name,
+                    "phone": inspection.vehicle.owner.phone,
+                    "email": inspection.vehicle.owner.email,
+                    "address": inspection.vehicle.owner.address,
+                    "is_active": inspection.vehicle.owner.is_active,
+                    "created_at": inspection.vehicle.owner.created_at.isoformat(),
+                    "updated_at": inspection.vehicle.owner.created_at.isoformat()  # Use created_at since updated_at doesn't exist
+                }
+            },
+            "items": [{
+                "id": item.id,
+                "report_id": item.inspection_id,
+                "category": "",  # You might need to add category field to InspectionItem model
+                "item_name": item.item_name,
+                "status": item.status,
+                "notes": item.notes
+            } for item in items]
         })
     
     return result
@@ -664,9 +756,56 @@ async def create_inspection(inspection_data: dict, db: Session = Depends(get_db)
         
         db.commit()
         
+        # Refresh to get the relationships
+        db.refresh(inspection)
+        
+        # Get the created items
+        items = db.query(InspectionItem).filter(
+            InspectionItem.inspection_id == inspection.id
+        ).all()
+        
+        # Get vehicle and client data
+        vehicle = db.query(Vehicle).filter(Vehicle.id == inspection.vehicle_id).first()
+        client = db.query(Client).filter(Client.id == vehicle.client_id).first()
+        
         return {
             "id": inspection.id,
-            "message": "Inspection report created successfully"
+            "vehicle_id": inspection.vehicle_id,
+            "inspection_date": inspection.inspection_date.isoformat(),
+            "overall_status": inspection.overall_condition,
+            "notes": inspection.technician_notes,
+            "created_at": inspection.created_at.isoformat(),
+            "updated_at": inspection.created_at.isoformat(),
+            "vehicle": {
+                "id": vehicle.id,
+                "make": vehicle.make,
+                "model": vehicle.model,
+                "year": vehicle.year,
+                "license_plate": vehicle.license_plate,
+                "vin": vehicle.vin,
+                "color": vehicle.color,
+                "client_id": vehicle.client_id,
+                "created_at": vehicle.created_at.isoformat(),
+                "updated_at": vehicle.created_at.isoformat(),
+                "client": {
+                    "id": client.id,
+                    "name": client.name,
+                    "phone": client.phone,
+                    "email": client.email,
+                    "address": client.address,
+                    "is_active": client.is_active,
+                    "created_at": client.created_at.isoformat(),
+                    "updated_at": client.created_at.isoformat()
+                }
+            },
+            "items": [{
+                "id": item.id,
+                "report_id": item.inspection_id,
+                "category": "",
+                "item_name": item.item_name,
+                "status": item.status,
+                "notes": item.notes
+            } for item in items]
         }
     except Exception as e:
         db.rollback()
@@ -690,21 +829,131 @@ async def get_inspection_details(inspection_id: int, db: Session = Depends(get_d
     return {
         "id": inspection.id,
         "vehicle_id": inspection.vehicle_id,
-        "vehicle_info": f"{inspection.vehicle.make} {inspection.vehicle.model} ({inspection.vehicle.license_plate})",
-        "client_name": inspection.vehicle.owner.name,
-        "client_id": inspection.vehicle.client_id,
         "inspection_date": inspection.inspection_date.isoformat(),
-        "overall_condition": inspection.overall_condition,
-        "technician_notes": inspection.technician_notes,
-        "recommendations": inspection.recommendations,
+        "overall_status": inspection.overall_condition,
+        "notes": inspection.technician_notes,
         "created_at": inspection.created_at.isoformat(),
+        "updated_at": inspection.created_at.isoformat(),
+        "vehicle": {
+            "id": inspection.vehicle.id,
+            "make": inspection.vehicle.make,
+            "model": inspection.vehicle.model,
+            "year": inspection.vehicle.year,
+            "license_plate": inspection.vehicle.license_plate,
+            "vin": inspection.vehicle.vin,
+            "color": inspection.vehicle.color,
+            "client_id": inspection.vehicle.client_id,
+            "created_at": inspection.vehicle.created_at.isoformat(),
+            "updated_at": inspection.vehicle.created_at.isoformat(),
+            "client": {
+                "id": inspection.vehicle.owner.id,
+                "name": inspection.vehicle.owner.name,
+                "phone": inspection.vehicle.owner.phone,
+                "email": inspection.vehicle.owner.email,
+                "address": inspection.vehicle.owner.address,
+                "is_active": inspection.vehicle.owner.is_active,
+                "created_at": inspection.vehicle.owner.created_at.isoformat(),
+                "updated_at": inspection.vehicle.owner.created_at.isoformat()
+            }
+        },
         "items": [{
             "id": item.id,
+            "report_id": item.inspection_id,
+            "category": "",
             "item_name": item.item_name,
             "status": item.status,
             "notes": item.notes
         } for item in items]
     }
+
+@app.put("/admin/inspections/{inspection_id}")
+async def update_inspection(inspection_id: int, inspection_data: dict, db: Session = Depends(get_db)):
+    """Update an inspection report"""
+    try:
+        # Get existing inspection
+        inspection = db.query(InspectionReport).filter(
+            InspectionReport.id == inspection_id
+        ).first()
+        
+        if not inspection:
+            raise HTTPException(status_code=404, detail="Inspection not found")
+        
+        # Update inspection fields
+        inspection.vehicle_id = inspection_data["vehicle_id"]
+        inspection.inspection_date = datetime.fromisoformat(inspection_data["inspection_date"].replace('Z', '+00:00'))
+        inspection.overall_condition = inspection_data["overall_condition"]
+        inspection.technician_notes = inspection_data.get("technician_notes")
+        inspection.recommendations = inspection_data.get("recommendations")
+        
+        # Delete existing items and add new ones
+        db.query(InspectionItem).filter(
+            InspectionItem.inspection_id == inspection_id
+        ).delete()
+        
+        # Add new inspection items if provided
+        if "items" in inspection_data:
+            for item_data in inspection_data["items"]:
+                item = InspectionItem(
+                    inspection_id=inspection.id,
+                    item_name=item_data["item_name"],
+                    status=item_data["status"],
+                    notes=item_data.get("notes")
+                )
+                db.add(item)
+        
+        db.commit()
+        
+        # Get updated items
+        items = db.query(InspectionItem).filter(
+            InspectionItem.inspection_id == inspection_id
+        ).all()
+        
+        # Get vehicle and client data
+        vehicle = db.query(Vehicle).filter(Vehicle.id == inspection.vehicle_id).first()
+        client = db.query(Client).filter(Client.id == vehicle.client_id).first()
+        
+        return {
+            "id": inspection.id,
+            "vehicle_id": inspection.vehicle_id,
+            "inspection_date": inspection.inspection_date.isoformat(),
+            "overall_status": inspection.overall_condition,
+            "notes": inspection.technician_notes,
+            "created_at": inspection.created_at.isoformat(),
+            "updated_at": inspection.created_at.isoformat(),
+            "vehicle": {
+                "id": vehicle.id,
+                "make": vehicle.make,
+                "model": vehicle.model,
+                "year": vehicle.year,
+                "license_plate": vehicle.license_plate,
+                "vin": vehicle.vin,
+                "color": vehicle.color,
+                "client_id": vehicle.client_id,
+                "created_at": vehicle.created_at.isoformat(),
+                "updated_at": vehicle.created_at.isoformat(),
+                "client": {
+                    "id": client.id,
+                    "name": client.name,
+                    "phone": client.phone,
+                    "email": client.email,
+                    "address": client.address,
+                    "is_active": client.is_active,
+                    "created_at": client.created_at.isoformat(),
+                    "updated_at": client.created_at.isoformat()
+                }
+            },
+            "items": [{
+                "id": item.id,
+                "report_id": item.inspection_id,
+                "category": "",
+                "item_name": item.item_name,
+                "status": item.status,
+                "notes": item.notes
+            } for item in items]
+        }
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
 @app.delete("/admin/inspections/{inspection_id}")
 async def delete_inspection(inspection_id: int, db: Session = Depends(get_db)):
@@ -727,6 +976,35 @@ async def delete_inspection(inspection_id: int, db: Session = Depends(get_db)):
     
     return {"message": "Inspection deleted successfully"}
 
+@app.get("/admin/vehicles/{vehicle_id}/inspections")
+async def get_vehicle_inspections(vehicle_id: int, db: Session = Depends(get_db)):
+    """Get available inspections for a specific vehicle that can be linked to services"""
+    vehicle = db.query(Vehicle).filter(Vehicle.id == vehicle_id).first()
+    if not vehicle:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+    
+    inspections = db.query(InspectionReport).filter(
+        InspectionReport.vehicle_id == vehicle_id
+    ).order_by(InspectionReport.inspection_date.desc()).all()
+    
+    result = []
+    for inspection in inspections:
+        # Check if this inspection is already linked to a service
+        linked_service = db.query(DBServiceRecord).filter(
+            DBServiceRecord.linked_inspection_id == inspection.id
+        ).first()
+        
+        result.append({
+            "id": inspection.id,
+            "inspection_date": inspection.inspection_date.isoformat(),
+            "overall_condition": inspection.overall_condition,
+            "technician_notes": inspection.technician_notes or "",
+            "is_linked": linked_service is not None,
+            "linked_service_id": linked_service.id if linked_service else None
+        })
+    
+    return result
+
 # ===== ADMIN SERVICE RECORDS MANAGEMENT =====
 
 @app.get("/admin/services")
@@ -742,38 +1020,69 @@ async def get_all_service_records(db: Session = Depends(get_db)):
         if vehicle:
             client = db.query(Client).filter(Client.id == vehicle.client_id).first()
         
+        # Get service items
+        service_items = db.query(ServiceItem).filter(
+            ServiceItem.service_record_id == service.id
+        ).all()
+        
+        # Create service type summary from items
+        service_types = [item.service_name for item in service_items]
+        service_type_summary = ", ".join(service_types) if service_types else "General Service"
+        
         result.append({
             "id": service.id,
             "vehicle_id": service.vehicle_id,
             "vehicle_info": f"{vehicle.make} {vehicle.model} ({vehicle.license_plate})" if vehicle else "Unknown Vehicle",
             "client_name": client.name if client else "Unknown Client",
             "client_id": vehicle.client_id if vehicle else None,
-            "service_type": service.service_type,
-            "description": service.description,
-            "cost": service.cost,
+            "service_type": service_type_summary,
+            "description": f"{len(service_items)} service(s): {service_type_summary}",
+            "cost": service.total_cost,
             "service_date": service.service_date.isoformat(),
             "status": service.status,
             "technician_notes": service.technician_notes,
-            "created_at": service.created_at.isoformat()
+            "created_at": service.created_at.isoformat(),
+            "service_items": [{
+                "id": item.id,
+                "service_type": item.service_type,
+                "service_name": item.service_name,
+                "description": item.description,
+                "price": item.price
+            } for item in service_items]
         })
     
     return result
 
 @app.post("/admin/services")
 async def create_service_record(service_data: dict, db: Session = Depends(get_db)):
-    """Create a new service record"""
+    """Create a new service record with service items"""
     try:
+        # Calculate total cost from service items
+        total_cost = sum(float(item["price"]) for item in service_data.get("service_items", []))
+        
         service = DBServiceRecord(
             vehicle_id=service_data["vehicle_id"],
-            service_type=service_data["service_type"],
-            description=service_data.get("description"),
-            cost=float(service_data["cost"]),
             service_date=datetime.fromisoformat(service_data["service_date"].replace('Z', '+00:00')),
             status=service_data.get("status", "completed"),
-            technician_notes=service_data.get("technician_notes")
+            technician_notes=service_data.get("technician_notes"),
+            total_cost=total_cost
         )
         
         db.add(service)
+        db.flush()  # Get the ID
+        
+        # Create service items
+        if "service_items" in service_data:
+            for item_data in service_data["service_items"]:
+                service_item = ServiceItem(
+                    service_record_id=service.id,
+                    service_type=item_data["service_type"],
+                    service_name=item_data["service_name"],
+                    description=item_data.get("description"),
+                    price=float(item_data["price"])
+                )
+                db.add(service_item)
+        
         db.commit()
         
         return {
@@ -786,7 +1095,7 @@ async def create_service_record(service_data: dict, db: Session = Depends(get_db
 
 @app.get("/admin/services/{service_id}")
 async def get_service_details(service_id: int, db: Session = Depends(get_db)):
-    """Get detailed service record"""
+    """Get detailed service record with service items"""
     service = db.query(DBServiceRecord).filter(
         DBServiceRecord.id == service_id
     ).first()
@@ -800,24 +1109,40 @@ async def get_service_details(service_id: int, db: Session = Depends(get_db)):
     if vehicle:
         client = db.query(Client).filter(Client.id == vehicle.client_id).first()
     
+    # Get service items
+    service_items = db.query(ServiceItem).filter(
+        ServiceItem.service_record_id == service.id
+    ).all()
+    
+    # Create service type summary from items
+    service_types = [item.service_name for item in service_items]
+    service_type_summary = ", ".join(service_types) if service_types else "General Service"
+    
     return {
         "id": service.id,
         "vehicle_id": service.vehicle_id,
         "vehicle_info": f"{vehicle.make} {vehicle.model} ({vehicle.license_plate})" if vehicle else "Unknown Vehicle",
         "client_name": client.name if client else "Unknown Client",
         "client_id": vehicle.client_id if vehicle else None,
-        "service_type": service.service_type,
-        "description": service.description,
-        "cost": service.cost,
+        "service_type": service_type_summary,
+        "description": f"{len(service_items)} service(s): {service_type_summary}",
+        "cost": service.total_cost,
         "service_date": service.service_date.isoformat(),
         "status": service.status,
         "technician_notes": service.technician_notes,
-        "created_at": service.created_at.isoformat()
+        "created_at": service.created_at.isoformat(),
+        "service_items": [{
+            "id": item.id,
+            "service_type": item.service_type,
+            "service_name": item.service_name,
+            "description": item.description,
+            "price": item.price
+        } for item in service_items]
     }
 
 @app.delete("/admin/services/{service_id}")
 async def delete_service_record(service_id: int, db: Session = Depends(get_db)):
-    """Delete a service record"""
+    """Delete a service record and its service items"""
     service = db.query(DBServiceRecord).filter(
         DBServiceRecord.id == service_id
     ).first()
@@ -825,6 +1150,7 @@ async def delete_service_record(service_id: int, db: Session = Depends(get_db)):
     if not service:
         raise HTTPException(status_code=404, detail="Service record not found")
     
+    # Service items will be deleted automatically due to cascade
     db.delete(service)
     db.commit()
     

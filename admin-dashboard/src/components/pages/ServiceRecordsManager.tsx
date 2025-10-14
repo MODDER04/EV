@@ -1,0 +1,1 @@
+export { ServiceRecordsManager as default } from './index';

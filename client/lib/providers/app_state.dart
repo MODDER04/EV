@@ -153,16 +153,7 @@ class AppState extends ChangeNotifier {
       // Load service history for all cars
       final serviceData = await apiClient.getAllServiceHistory();
       if (serviceData != null) {
-        _serviceHistory = serviceData.map((serviceJson) => ServiceRecord(
-          serviceId: serviceJson['service_id'],
-          carId: serviceJson['car_id'],
-          date: DateTime.parse(serviceJson['date']),
-          serviceType: serviceJson['service_type'],
-          description: serviceJson['description'],
-          cost: serviceJson['cost'].toDouble(),
-          status: serviceJson['status'],
-          technicianNotes: serviceJson['technician_notes'],
-        )).toList();
+        _serviceHistory = serviceData.map((serviceJson) => ServiceRecord.fromJson(serviceJson)).toList();
       }
       
       // Load inspections for all cars

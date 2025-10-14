@@ -1,0 +1,1 @@
+export { ClientsManager as default } from './index';
