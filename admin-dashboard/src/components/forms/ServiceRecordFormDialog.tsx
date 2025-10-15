@@ -237,14 +237,14 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} className="max-w-4xl max-h-[95vh] flex flex-col">
+      <DialogHeader>
+        <DialogTitle>{title}</DialogTitle>
+      </DialogHeader>
+      
       <DialogContent className="flex-1 overflow-y-auto p-0">
         <div className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-6">
+            <div className="space-y-6">
             {/* Vehicle Selection */}
             <div>
               <label htmlFor="vehicle" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
