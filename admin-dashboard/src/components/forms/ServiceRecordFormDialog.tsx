@@ -178,6 +178,40 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
     }));
   };
 
+  // Auto-add inspection service when inspection is linked
+  useEffect(() => {
+    if (linkedInspectionId && serviceTypes.length > 0) {
+      const inspectionServiceType = serviceTypes.find(st => st.type === 'inspection');
+      const hasInspectionService = formData.service_items.some(item => 
+        item.service_type === 'inspection' || 
+        item.service_name.toLowerCase().includes('inspection')
+      );
+      
+      if (inspectionServiceType && !hasInspectionService) {
+        const inspectionService: ServiceItemFormData = {
+          service_type: inspectionServiceType.type,
+          service_name: inspectionServiceType.name,
+          description: inspectionServiceType.description,
+          price: inspectionServiceType.base_price,
+        };
+        
+        setFormData(prev => ({
+          ...prev,
+          service_items: [inspectionService, ...prev.service_items],
+        }));
+      }
+    } else if (!linkedInspectionId) {
+      // Remove inspection service if inspection is unlinked
+      setFormData(prev => ({
+        ...prev,
+        service_items: prev.service_items.filter(item => 
+          item.service_type !== 'inspection' && 
+          !item.service_name.toLowerCase().includes('inspection')
+        ),
+      }));
+    }
+  }, [linkedInspectionId, serviceTypes]);
+
   // Calculate total cost
   const calculateTotal = () => {
     return formData.service_items.reduce((total, item) => total + (item.price || 0), 0);
@@ -352,15 +386,26 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
                   {formData.service_items.map((item, index) => (
                     <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          Service #{index + 1}
-                        </h4>
+                        <div className="flex items-center space-x-2">
+                          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            Service #{index + 1}
+                          </h4>
+                          {(item.service_type === 'inspection' || item.service_name.toLowerCase().includes('inspection')) && linkedInspectionId && (
+                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300">
+                              <Wrench className="h-3 w-3 mr-1" />
+                              Linked Inspection
+                            </span>
+                          )}
+                        </div>
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
                           onClick={() => removeServiceItem(index)}
                           className="text-red-600 hover:text-red-700 dark:text-red-400"
+                          disabled={(item.service_type === 'inspection' || item.service_name.toLowerCase().includes('inspection')) && linkedInspectionId}
+                          title={(item.service_type === 'inspection' || item.service_name.toLowerCase().includes('inspection')) && linkedInspectionId ? 
+                            'Cannot remove linked inspection service. Unlink the inspection first.' : 'Remove service'}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -435,7 +480,10 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
                 <select
                   id="linked_inspection"
                   value={linkedInspectionId || ''}
-                  onChange={(e) => setLinkedInspectionId(e.target.value ? parseInt(e.target.value) : null)}
+                  onChange={(e) => {
+                    const newInspectionId = e.target.value ? parseInt(e.target.value) : null;
+                    setLinkedInspectionId(newInspectionId);
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">None - Create new inspection if needed</option>
@@ -453,6 +501,9 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
                 </select>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Select an existing inspection to link to this service, or leave empty to create a new one if service includes inspection.
+                  {linkedInspectionId && (
+                    <span className="text-green-600 dark:text-green-400"> ✓ Vehicle inspection service will be automatically added to billing.</span>
+                  )}
                   {availableInspections.filter(i => i.is_linked).length > 0 && (
                     <span className="text-blue-600 dark:text-blue-400"> Note: Some inspections are already linked to other services.</span>
                   )}
@@ -473,6 +524,7 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 placeholder="Additional notes from the technician"
               />
+            </div>
             </div>
           </form>
         </div>
