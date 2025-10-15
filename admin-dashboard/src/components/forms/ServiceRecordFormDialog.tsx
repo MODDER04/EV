@@ -210,7 +210,7 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
         ),
       }));
     }
-  }, [linkedInspectionId, serviceTypes]);
+  }, [linkedInspectionId, serviceTypes, formData.service_items]);
 
   // Calculate total cost
   const calculateTotal = () => {
@@ -403,7 +403,7 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
                           size="sm"
                           onClick={() => removeServiceItem(index)}
                           className="text-red-600 hover:text-red-700 dark:text-red-400"
-                          disabled={(item.service_type === 'inspection' || item.service_name.toLowerCase().includes('inspection')) && linkedInspectionId}
+                          disabled={Boolean((item.service_type === 'inspection' || item.service_name.toLowerCase().includes('inspection')) && linkedInspectionId)}
                           title={(item.service_type === 'inspection' || item.service_name.toLowerCase().includes('inspection')) && linkedInspectionId ? 
                             'Cannot remove linked inspection service. Unlink the inspection first.' : 'Remove service'}
                         >
