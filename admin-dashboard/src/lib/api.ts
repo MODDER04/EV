@@ -156,6 +156,9 @@ export const inspectionsApi = {
   getByVehicleId: (vehicleId: number): Promise<AxiosResponse<InspectionReport[]>> =>
     apiClient.get(`/admin/inspections?vehicle_id=${vehicleId}`),
     
+  getByVehicleIdForLinking: (vehicleId: number): Promise<AxiosResponse<any[]>> =>
+    apiClient.get(`/admin/vehicles/${vehicleId}/inspections`),
+    
   create: (data: InspectionReportFormData): Promise<AxiosResponse<InspectionReport>> =>
     apiClient.post('/admin/inspections', data),
     

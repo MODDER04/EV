@@ -26,10 +26,13 @@ import {
   Badge, 
   EmptyState, 
   Avatar, 
-  LoadingSpinner 
+  LoadingSpinner,
+  Table,
+  Pagination
 } from '../ui';
 import { ConfirmDialog } from '../ui/Dialog';
 import { useToastHelpers } from '../ui/Toast';
+import { usePagination } from '../../hooks/usePagination';
 import {
   useClients, 
   useCreateClient, 
@@ -95,6 +98,11 @@ export const ClientsManager: React.FC = () => {
     (client.phone && client.phone.includes(searchTerm)) ||
     (client.email && client.email.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
+
+  const pagination = usePagination({
+    data: filteredClients,
+    initialItemsPerPage: 10,
+  });
 
   const handleCreateClient = async (data: ClientFormData) => {
     try {
@@ -244,102 +252,101 @@ export const ClientsManager: React.FC = () => {
               }
             />
           ) : (
-          <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Contact
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Address
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Created
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredClients.map((client) => (
-                    <tr key={client.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <td className="px-6 py-4 whitespace-nowrap">
+            <div className="space-y-4">
+              <Table
+                columns={[
+                  { key: 'name', header: 'Name', width: '20%' },
+                  { key: 'contact', header: 'Contact', width: '20%' },
+                  { key: 'address', header: 'Address', width: '20%' },
+                  { key: 'status', header: 'Status', width: '10%' },
+                  { key: 'created', header: 'Created', width: '15%' },
+                  { key: 'actions', header: 'Actions', width: '15%' },
+                ]}
+                data={pagination.paginatedData}
+                renderRow={(client: Client) => ({
+                  name: (
+                    <div className="flex items-center">
+                      <Avatar fallback={client.name.charAt(0)} className="h-8 w-8 mr-3" />
+                      <div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{client.name}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">ID: {client.id}</div>
+                      </div>
+                    </div>
+                  ),
+                  contact: (
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
+                      {client.phone && (
                         <div className="flex items-center">
-                          <Avatar fallback={client.name.charAt(0)} className="h-8 w-8 mr-3" />
-                          <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{client.name}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">ID: {client.id}</div>
-                          </div>
+                          <Phone className="h-3 w-3 mr-1" />
+                          {formatPhone(client.phone)}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 dark:text-gray-100">
-                          {client.phone && (
-                            <div className="flex items-center">
-                              <Phone className="h-3 w-3 mr-1" />
-                              {formatPhone(client.phone)}
-                            </div>
-                          )}
-                          {client.email && (
-                            <div className="flex items-center mt-1">
-                              <Mail className="h-3 w-3 mr-1" />
-                              {client.email}
-                            </div>
-                          )}
+                      )}
+                      {client.email && (
+                        <div className="flex items-center mt-1">
+                          <Mail className="h-3 w-3 mr-1" />
+                          {client.email}
                         </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 dark:text-gray-100">
-                          {client.address ? truncateText(client.address, 40) : '—'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Badge variant={client.is_active ? 'success' : 'danger'}>
-                          {client.is_active ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {formatDate(client.created_at)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleGenerateCodeForClient(client)}
-                            loading={generateCodeMutation.isPending || createCodeMutation.isPending}
-                            title="Generate access code"
-                          >
-                            <KeyRound className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setEditingClient(client)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setDeletingClient(client)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      )}
+                    </div>
+                  ),
+                  address: (
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
+                      {client.address ? truncateText(client.address, 40) : '—'}
+                    </div>
+                  ),
+                  status: (
+                    <Badge variant={client.is_active ? 'success' : 'danger'}>
+                      {client.is_active ? 'Active' : 'Inactive'}
+                    </Badge>
+                  ),
+                  created: (
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(client.created_at)}
+                    </span>
+                  ),
+                  actions: (
+                    <div className="flex items-center justify-end space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleGenerateCodeForClient(client)}
+                        loading={generateCodeMutation.isPending || createCodeMutation.isPending}
+                        title="Generate access code"
+                      >
+                        <KeyRound className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditingClient(client)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDeletingClient(client)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ),
+                })}
+                keyExtractor={(client: Client) => client.id.toString()}
+              />
+              
+              <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                itemsPerPage={pagination.itemsPerPage}
+                totalItems={pagination.totalItems}
+                startIndex={pagination.startIndex}
+                endIndex={pagination.endIndex}
+                onPageChange={pagination.goToPage}
+                onItemsPerPageChange={pagination.setItemsPerPage}
+                onNextPage={pagination.nextPage}
+                onPrevPage={pagination.prevPage}
+              />
             </div>
           )}
         </CardContent>
@@ -400,6 +407,11 @@ export const VehiclesManager: React.FC = () => {
     (vehicle.vin && vehicle.vin.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (vehicle.client?.name && vehicle.client.name.toLowerCase().includes(searchTerm.toLowerCase()))
   ) || [];
+
+  const vehiclesPagination = usePagination({
+    data: filteredVehicles,
+    initialItemsPerPage: 10,
+  });
 
   const handleCreateVehicle = async (data: VehicleFormData) => {
     try {
@@ -529,112 +541,113 @@ export const VehiclesManager: React.FC = () => {
               }
             />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Vehicle
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Owner
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Identifiers
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Details
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Added
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredVehicles.map((vehicle) => (
-                    <tr key={vehicle.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <td className="px-6 py-4 whitespace-nowrap">
+            <div className="space-y-4">
+              <Table
+                columns={[
+                  { key: 'vehicle', header: 'Vehicle', width: '25%' },
+                  { key: 'owner', header: 'Owner', width: '20%' },
+                  { key: 'identifiers', header: 'Identifiers', width: '20%' },
+                  { key: 'details', header: 'Details', width: '15%' },
+                  { key: 'added', header: 'Added', width: '10%' },
+                  { key: 'actions', header: 'Actions', width: '10%' },
+                ]}
+                data={vehiclesPagination.paginatedData}
+                renderRow={(vehicle: Vehicle) => ({
+                  vehicle: (
+                    <div className="flex items-center">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg mr-3">
+                        <Car className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {vehicle.year} {vehicle.make} {vehicle.model}
+                        </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">ID: {vehicle.id}</div>
+                      </div>
+                    </div>
+                  ),
+                  owner: (
+                    <div>
+                      <div className="text-sm text-gray-900 dark:text-gray-100">
+                        {vehicle.client?.name || 'Unknown'}
+                      </div>
+                      {vehicle.client?.phone && (
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {formatPhone(vehicle.client.phone)}
+                        </div>
+                      )}
+                    </div>
+                  ),
+                  identifiers: (
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
+                      {vehicle.license_plate && (
                         <div className="flex items-center">
-                          <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg mr-3">
-                            <Car className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                              {vehicle.year} {vehicle.make} {vehicle.model}
-                            </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">ID: {vehicle.id}</div>
-                          </div>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                            {vehicle.license_plate}
+                          </span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 dark:text-gray-100">
-                          {vehicle.client?.name || 'Unknown'}
+                      )}
+                      {vehicle.vin && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          VIN: {truncateText(vehicle.vin, 10)}
                         </div>
-                        {vehicle.client?.phone && (
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {formatPhone(vehicle.client.phone)}
-                          </div>
-                        )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 dark:text-gray-100">
-                          {vehicle.license_plate && (
-                            <div className="flex items-center">
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-                                {vehicle.license_plate}
-                              </span>
-                            </div>
-                          )}
-                          {vehicle.vin && (
-                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                              VIN: {truncateText(vehicle.vin, 10)}
-                            </div>
-                          )}
+                      )}
+                    </div>
+                  ),
+                  details: (
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
+                      {vehicle.color && (
+                        <div className="flex items-center">
+                          <span className="text-gray-500 dark:text-gray-400">Color:</span>
+                          <span className="ml-1">{vehicle.color}</span>
                         </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 dark:text-gray-100">
-                          {vehicle.color && (
-                            <div className="flex items-center">
-                              <span className="text-gray-500 dark:text-gray-400">Color:</span>
-                              <span className="ml-1">{vehicle.color}</span>
-                            </div>
-                          )}
-                          {vehicle.mileage && (
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {formatMileage(vehicle.mileage)}
-                            </div>
-                          )}
+                      )}
+                      {vehicle.mileage && (
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {formatMileage(vehicle.mileage)}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {formatDate(vehicle.created_at)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setEditingVehicle(vehicle)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setDeletingVehicle(vehicle)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      )}
+                    </div>
+                  ),
+                  added: (
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(vehicle.created_at)}
+                    </span>
+                  ),
+                  actions: (
+                    <div className="flex items-center justify-end space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditingVehicle(vehicle)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDeletingVehicle(vehicle)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ),
+                })}
+                keyExtractor={(vehicle: Vehicle) => vehicle.id.toString()}
+              />
+              
+              <Pagination
+                currentPage={vehiclesPagination.currentPage}
+                totalPages={vehiclesPagination.totalPages}
+                itemsPerPage={vehiclesPagination.itemsPerPage}
+                totalItems={vehiclesPagination.totalItems}
+                startIndex={vehiclesPagination.startIndex}
+                endIndex={vehiclesPagination.endIndex}
+                onPageChange={vehiclesPagination.goToPage}
+                onItemsPerPageChange={vehiclesPagination.setItemsPerPage}
+                onNextPage={vehiclesPagination.nextPage}
+                onPrevPage={vehiclesPagination.prevPage}
+              />
             </div>
           )}
         </CardContent>
@@ -705,6 +718,11 @@ export const CodesManager: React.FC = () => {
     
     return matchesSearch && matchesStatus;
   }) || [];
+
+  const codesPagination = usePagination({
+    data: filteredCodes,
+    initialItemsPerPage: 10,
+  });
 
   const handleCreateCode = async (data: ClientCodeFormData) => {
     try {
@@ -924,115 +942,114 @@ export const CodesManager: React.FC = () => {
               }
             />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Code
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Assigned Client
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Created
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Last Used
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredCodes.map((code) => (
-                    <tr key={code.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg mr-3">
-                            <KeyRound className="h-4 w-4 text-purple-600 dark:text-purple-400" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-mono font-medium text-gray-900 dark:text-gray-100">{code.code}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">ID: {code.id}</div>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyToClipboard(code.code)}
-                            className="ml-2 h-6 w-6 p-0"
-                          >
-                            <Copy className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900 dark:text-gray-100">
-                          {code.client ? (
-                            <div>
-                              <div className="font-medium">{code.client.name}</div>
-                              {code.client.phone && (
-                                <div className="text-gray-500 dark:text-gray-400">
-                                  {formatPhone(code.client.phone)}
-                                </div>
-                              )}
+            <div className="space-y-4">
+              <Table
+                columns={[
+                  { key: 'code', header: 'Code', width: '20%' },
+                  { key: 'client', header: 'Assigned Client', width: '20%' },
+                  { key: 'status', header: 'Status', width: '15%' },
+                  { key: 'created', header: 'Created', width: '15%' },
+                  { key: 'lastUsed', header: 'Last Used', width: '15%' },
+                  { key: 'actions', header: 'Actions', width: '15%' },
+                ]}
+                data={codesPagination.paginatedData}
+                renderRow={(code: ClientCode) => ({
+                  code: (
+                    <div className="flex items-center">
+                      <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg mr-3">
+                        <KeyRound className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-mono font-medium text-gray-900 dark:text-gray-100">{code.code}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">ID: {code.id}</div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => copyToClipboard(code.code)}
+                        className="ml-2 h-6 w-6 p-0"
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ),
+                  client: (
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
+                      {code.client ? (
+                        <div>
+                          <div className="font-medium">{code.client.name}</div>
+                          {code.client.phone && (
+                            <div className="text-gray-500 dark:text-gray-400">
+                              {formatPhone(code.client.phone)}
                             </div>
-                          ) : (
-                            <span className="text-gray-400 dark:text-gray-500 italic">Unassigned</span>
                           )}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center space-x-2">
-                          <Badge variant={code.is_active ? 'success' : 'danger'}>
-                            {code.is_active ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {formatDate(code.created_at)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {code.used_at ? formatDateTime(code.used_at) : '—'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleToggleCode(code)}
-                            disabled={toggleCodeMutation.isPending}
-                          >
-                            {code.is_active ? (
-                              <EyeOff className="h-4 w-4" />
-                            ) : (
-                              <Eye className="h-4 w-4" />
-                            )}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setEditingCode(code)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setDeletingCode(code)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      ) : (
+                        <span className="text-gray-400 dark:text-gray-500 italic">Unassigned</span>
+                      )}
+                    </div>
+                  ),
+                  status: (
+                    <Badge variant={code.is_active ? 'success' : 'danger'}>
+                      {code.is_active ? 'Active' : 'Inactive'}
+                    </Badge>
+                  ),
+                  created: (
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(code.created_at)}
+                    </span>
+                  ),
+                  lastUsed: (
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {code.used_at ? formatDateTime(code.used_at) : '—'}
+                    </span>
+                  ),
+                  actions: (
+                    <div className="flex items-center justify-end space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleToggleCode(code)}
+                        disabled={toggleCodeMutation.isPending}
+                      >
+                        {code.is_active ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditingCode(code)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDeletingCode(code)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ),
+                })}
+                keyExtractor={(code: ClientCode) => code.id.toString()}
+              />
+              
+              <Pagination
+                currentPage={codesPagination.currentPage}
+                totalPages={codesPagination.totalPages}
+                itemsPerPage={codesPagination.itemsPerPage}
+                totalItems={codesPagination.totalItems}
+                startIndex={codesPagination.startIndex}
+                endIndex={codesPagination.endIndex}
+                onPageChange={codesPagination.goToPage}
+                onItemsPerPageChange={codesPagination.setItemsPerPage}
+                onNextPage={codesPagination.nextPage}
+                onPrevPage={codesPagination.prevPage}
+              />
             </div>
           )}
         </CardContent>
@@ -1107,6 +1124,11 @@ export const ServiceRecordsManager: React.FC = () => {
     
     return matchesSearch && matchesVehicle;
   }) || [];
+
+  const serviceRecordsPagination = usePagination({
+    data: filteredRecords,
+    initialItemsPerPage: 10,
+  });
 
   const handleCreateRecord = async (data: ServiceRecordFormData) => {
     try {
@@ -1283,119 +1305,120 @@ export const ServiceRecordsManager: React.FC = () => {
               }
             />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-800">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Vehicle
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Service Details
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Cost
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredRecords.map((record) => (
-                    <tr key={record.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg mr-3">
-                            <Car className="h-4 w-4 text-green-600 dark:text-green-400" />
-                          </div>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                              {record.vehicle ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}` : 'Unknown Vehicle'}
-                            </div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                              {record.vehicle?.license_plate && (
-                                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
-                                  {record.vehicle.license_plate}
-                                </span>
-                              )}
-                            </div>
-                          </div>
+            <div className="space-y-4">
+              <Table
+                columns={[
+                  { key: 'vehicle', header: 'Vehicle', width: '20%' },
+                  { key: 'serviceDetails', header: 'Service Details', width: '30%' },
+                  { key: 'status', header: 'Status', width: '15%' },
+                  { key: 'cost', header: 'Cost', width: '15%' },
+                  { key: 'date', header: 'Date', width: '10%' },
+                  { key: 'actions', header: 'Actions', width: '10%' },
+                ]}
+                data={serviceRecordsPagination.paginatedData}
+                renderRow={(record: ServiceRecord) => ({
+                  vehicle: (
+                    <div className="flex items-center">
+                      <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg mr-3">
+                        <Car className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {record.vehicle ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}` : 'Unknown Vehicle'}
                         </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900 dark:text-gray-100">
-                          <div className="font-medium">
-                            {record.service_items && record.service_items.length > 0 ? (
-                              <div>
-                                <div className="flex items-center gap-1">
-                                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300">
-                                    {record.service_items.length} service{record.service_items.length !== 1 ? 's' : ''}
-                                  </span>
-                                </div>
-                                <div className="mt-1 text-gray-600 dark:text-gray-400">
-                                  {record.service_items.map(item => item.service_name).join(', ')}
-                                </div>
-                              </div>
-                            ) : (
-                              <span className="text-gray-500 italic">No services</span>
-                            )}
-                          </div>
-                          {record.technician_notes && (
-                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                              Notes: {truncateText(record.technician_notes, 30)}
-                            </div>
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                          {record.vehicle?.license_plate && (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                              {record.vehicle.license_plate}
+                            </span>
                           )}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Badge variant={record.status === 'completed' ? 'success' : record.status === 'in_progress' ? 'warning' : 'info'}>
-                          {record.status === 'in_progress' ? 'In Progress' : record.status.charAt(0).toUpperCase() + record.status.slice(1)}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {formatCurrency(record.total_cost || 0)}
-                        </div>
-                        {record.service_items && record.service_items.length > 1 && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            {record.service_items.map((item, idx) => (
-                              <div key={idx}>{item.service_name}: {formatCurrency(item.price)}</div>
-                            ))}
+                      </div>
+                    </div>
+                  ),
+                  serviceDetails: (
+                    <div className="text-sm text-gray-900 dark:text-gray-100">
+                      <div className="font-medium">
+                        {record.service_items && record.service_items.length > 0 ? (
+                          <div>
+                            <div className="flex items-center gap-1">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300">
+                                {record.service_items.length} service{record.service_items.length !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                            <div className="mt-1 text-gray-600 dark:text-gray-400">
+                              {record.service_items.map((item: any) => item.service_name).join(', ')}
+                            </div>
                           </div>
+                        ) : (
+                          <span className="text-gray-500 italic">No services</span>
                         )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                        {formatDate(record.service_date)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex items-center justify-end space-x-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setEditingRecord(record)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setDeletingRecord(record)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                      </div>
+                      {record.technician_notes && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Notes: {truncateText(record.technician_notes, 30)}
                         </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                      )}
+                    </div>
+                  ),
+                  status: (
+                    <Badge variant={record.status === 'completed' ? 'success' : record.status === 'in_progress' ? 'warning' : 'info'}>
+                      {record.status === 'in_progress' ? 'In Progress' : record.status.charAt(0).toUpperCase() + record.status.slice(1)}
+                    </Badge>
+                  ),
+                  cost: (
+                    <div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {formatCurrency(record.total_cost || 0)}
+                      </div>
+                      {record.service_items && record.service_items.length > 1 && (
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {record.service_items.map((item: any, idx: number) => (
+                            <div key={idx}>{item.service_name}: {formatCurrency(item.price)}</div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ),
+                  date: (
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      {formatDate(record.service_date)}
+                    </span>
+                  ),
+                  actions: (
+                    <div className="flex items-center justify-end space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setEditingRecord(record)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDeletingRecord(record)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ),
+                })}
+                keyExtractor={(record: ServiceRecord) => record.id.toString()}
+              />
+              
+              <Pagination
+                currentPage={serviceRecordsPagination.currentPage}
+                totalPages={serviceRecordsPagination.totalPages}
+                itemsPerPage={serviceRecordsPagination.itemsPerPage}
+                totalItems={serviceRecordsPagination.totalItems}
+                startIndex={serviceRecordsPagination.startIndex}
+                endIndex={serviceRecordsPagination.endIndex}
+                onPageChange={serviceRecordsPagination.goToPage}
+                onItemsPerPageChange={serviceRecordsPagination.setItemsPerPage}
+                onNextPage={serviceRecordsPagination.nextPage}
+                onPrevPage={serviceRecordsPagination.prevPage}
+              />
             </div>
           )}
         </CardContent>

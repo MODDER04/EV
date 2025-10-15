@@ -244,6 +244,8 @@ export const Progress: React.FC<ProgressProps> = ({
 // Export all components
 export { default as Button } from './Button';
 export { default as Input } from './Input';
+export { default as Pagination } from './Pagination';
+export { default as Table } from './Table';
 export * from './Card';
 export * from './Dialog';
 export * from './Toast';

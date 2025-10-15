@@ -4,6 +4,7 @@ import { Input, Button } from '../ui';
 import { ServiceRecord, Vehicle, ServiceRecordFormData, ServiceItemFormData, ServiceType } from '../../types';
 import { formatDateForInput, formatCurrency } from '../../lib/utils';
 import { Plus, Trash2, Wrench } from 'lucide-react';
+import { inspectionsApi } from '../../lib/api';
 
 interface ServiceRecordFormDialogProps {
   isOpen: boolean;
@@ -71,13 +72,10 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
     const loadVehicleInspections = async () => {
       if (formData.vehicle_id > 0) {
         try {
-          const response = await fetch(`/admin/vehicles/${formData.vehicle_id}/inspections`);
-          if (response.ok) {
-            const inspections = await response.json();
-            setAvailableInspections(inspections);
-          } else {
-            setAvailableInspections([]);
-          }
+          console.log(`Loading inspections for vehicle ${formData.vehicle_id}`);
+          const response = await inspectionsApi.getByVehicleIdForLinking(formData.vehicle_id);
+          console.log('Inspections loaded:', response.data);
+          setAvailableInspections(response.data || []);
         } catch (error) {
           console.error('Failed to load inspections:', error);
           setAvailableInspections([]);
@@ -426,8 +424,13 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
               )}
             </div>
 
+            {/* Debug Info - Remove after fixing */}
+            <div className="bg-yellow-100 p-2 rounded mb-4">
+              <p className="text-xs">Debug: vehicle_id = {formData.vehicle_id}, inspections = {availableInspections.length}</p>
+            </div>
+
             {/* Linked Inspection */}
-            {formData.vehicle_id > 0 && availableInspections.length > 0 && (
+            {formData.vehicle_id > 0 && (
               <div>
                 <label htmlFor="linked_inspection" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Link to Existing Inspection (Optional)
@@ -439,20 +442,22 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">None - Create new inspection if needed</option>
-                  {availableInspections
-                    .filter(inspection => !inspection.is_linked)
-                    .map(inspection => (
+                  {availableInspections.length === 0 ? (
+                    <option disabled>No inspections found - Check console for errors</option>
+                  ) : (
+                    availableInspections.map(inspection => (
                       <option key={inspection.id} value={inspection.id}>
                         {new Date(inspection.inspection_date).toLocaleDateString()} - {inspection.overall_condition.toUpperCase()}
                         {inspection.technician_notes && ` - ${inspection.technician_notes.substring(0, 50)}...`}
+                        {inspection.is_linked && ` (Already linked to service #${inspection.linked_service_id})`}
                       </option>
                     ))
-                  }
+                  )}
                 </select>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Select an existing inspection to link to this service, or leave empty to create a new one if service includes inspection.
-                  {availableInspections.filter(i => !i.is_linked).length === 0 && (
-                    <span className="text-orange-600 dark:text-orange-400"> All inspections are already linked to other services.</span>
+                  {availableInspections.filter(i => i.is_linked).length > 0 && (
+                    <span className="text-blue-600 dark:text-blue-400"> Note: Some inspections are already linked to other services.</span>
                   )}
                 </p>
               </div>

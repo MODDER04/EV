@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Trash2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { InspectionReport, InspectionReportFormData, InspectionItemFormData, Vehicle } from '../../types';
+import { X, Plus, Trash2, CheckCircle, XCircle, AlertCircle, Wrench } from 'lucide-react';
+import { InspectionReport, InspectionReportFormData, InspectionItemFormData, Vehicle, ServiceItemFormData } from '../../types';
 import { Button, Input, Card } from '../ui';
 
 interface InspectionFormDialogProps {
@@ -40,6 +40,12 @@ const InspectionFormDialog: React.FC<InspectionFormDialogProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [createService, setCreateService] = useState(false);
+  const [serviceData, setServiceData] = useState({
+    status: 'pending',
+    technician_notes: '',
+    service_items: [] as ServiceItemFormData[]
+  });
 
   useEffect(() => {
     if (inspection) {
@@ -91,7 +97,16 @@ const InspectionFormDialog: React.FC<InspectionFormDialogProps> = ({
     }
 
     try {
-      await onSave(formData);
+      const submissionData: any = {
+        ...formData,
+        create_service: createService
+      };
+      
+      if (createService) {
+        submissionData.service_data = serviceData;
+      }
+      
+      await onSave(submissionData);
     } catch (error) {
       console.error('Error saving inspection:', error);
     }
@@ -331,6 +346,176 @@ const InspectionFormDialog: React.FC<InspectionFormDialogProps> = ({
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
               />
             </div>
+          </div>
+
+          {/* Service Creation Section */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <div className="flex items-center space-x-3 mb-4">
+              <input
+                type="checkbox"
+                id="create_service"
+                checked={createService}
+                onChange={(e) => setCreateService(e.target.checked)}
+                className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+              />
+              <label htmlFor="create_service" className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300">
+                <Wrench className="h-4 w-4 mr-2 text-blue-500" />
+                Create Recommended Service Based on Inspection
+              </label>
+            </div>
+            
+            {createService && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Service Status
+                    </label>
+                    <select
+                      value={serviceData.status}
+                      onChange={(e) => setServiceData(prev => ({ ...prev, status: e.target.value }))}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option value="pending">Pending</option>
+                      <option value="scheduled">Scheduled</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Service Date
+                    </label>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 py-2">
+                      Will use same date as inspection: {formData.inspection_date}
+                    </p>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Service Notes
+                  </label>
+                  <textarea
+                    value={serviceData.technician_notes}
+                    onChange={(e) => setServiceData(prev => ({ ...prev, technician_notes: e.target.value }))}
+                    rows={3}
+                    placeholder="Service notes (will auto-populate with inspection recommendations)"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  />
+                </div>
+                
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Recommended Services
+                    </label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setServiceData(prev => ({ 
+                        ...prev, 
+                        service_items: [...prev.service_items, { service_type: '', service_name: '', description: '', price: 0 }] 
+                      }))}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Service
+                    </Button>
+                  </div>
+                  
+                  {serviceData.service_items.length === 0 ? (
+                    <div className="text-center py-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+                      <Wrench className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500 dark:text-gray-400">No services added yet</p>
+                      <p className="text-sm text-gray-400 dark:text-gray-500">Add recommended services based on inspection findings</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {serviceData.service_items.map((item, index) => (
+                        <div key={index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <h5 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              Service #{index + 1}
+                            </h5>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setServiceData(prev => ({
+                                ...prev,
+                                service_items: prev.service_items.filter((_, i) => i !== index)
+                              }))}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                              <Input
+                                type="text"
+                                placeholder="Service name"
+                                value={item.service_name}
+                                onChange={(e) => {
+                                  const updatedItems = serviceData.service_items.map((sItem, sIndex) => 
+                                    sIndex === index ? { ...sItem, service_name: e.target.value } : sItem
+                                  );
+                                  setServiceData(prev => ({ ...prev, service_items: updatedItems }));
+                                }}
+                              />
+                            </div>
+                            
+                            <div>
+                              <Input
+                                type="text"
+                                placeholder="Description"
+                                value={item.description || ''}
+                                onChange={(e) => {
+                                  const updatedItems = serviceData.service_items.map((sItem, sIndex) => 
+                                    sIndex === index ? { ...sItem, description: e.target.value } : sItem
+                                  );
+                                  setServiceData(prev => ({ ...prev, service_items: updatedItems }));
+                                }}
+                              />
+                            </div>
+                            
+                            <div>
+                              <Input
+                                type="number"
+                                placeholder="Price"
+                                step="0.01"
+                                min="0"
+                                value={item.price.toString()}
+                                onChange={(e) => {
+                                  const updatedItems = serviceData.service_items.map((sItem, sIndex) => 
+                                    sIndex === index ? { ...sItem, price: parseFloat(e.target.value) || 0 } : sItem
+                                  );
+                                  setServiceData(prev => ({ ...prev, service_items: updatedItems }));
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Total Estimated Cost:
+                          </span>
+                          <span className="text-lg font-bold text-green-600 dark:text-green-400">
+                            ${serviceData.service_items.reduce((total, item) => total + (item.price || 0), 0).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Form Actions */}
