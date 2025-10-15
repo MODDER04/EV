@@ -163,7 +163,7 @@ const InspectionFormDialog: React.FC<InspectionFormDialogProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-5xl max-h-[95vh] flex flex-col">
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {inspection ? 'Edit Inspection Report' : 'New Inspection Report'}
@@ -176,7 +176,8 @@ const InspectionFormDialog: React.FC<InspectionFormDialogProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto">
+          <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -518,24 +519,27 @@ const InspectionFormDialog: React.FC<InspectionFormDialogProps> = ({
             )}
           </div>
 
-          {/* Form Actions */}
-          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isLoading}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Saving...' : inspection ? 'Update Inspection' : 'Create Inspection'}
-            </Button>
-          </div>
-        </form>
+          </form>
+        </div>
+        
+        {/* Form Actions - Fixed at bottom */}
+        <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            onClick={handleSubmit}
+          >
+            {isLoading ? 'Saving...' : inspection ? 'Update Inspection' : 'Create Inspection'}
+          </Button>
+        </div>
       </div>
     </div>
   );

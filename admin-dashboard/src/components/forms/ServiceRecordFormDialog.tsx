@@ -236,9 +236,10 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
   if (!isOpen) return null;
 
   return (
-    <Dialog isOpen={isOpen} onClose={onClose} className="max-w-2xl">
-      <DialogContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <Dialog isOpen={isOpen} onClose={onClose} className="max-w-4xl max-h-[95vh] flex flex-col">
+      <DialogContent className="flex-1 overflow-y-auto p-0">
+        <div className="p-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
@@ -424,10 +425,6 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
               )}
             </div>
 
-            {/* Debug Info - Remove after fixing */}
-            <div className="bg-yellow-100 p-2 rounded mb-4">
-              <p className="text-xs">Debug: vehicle_id = {formData.vehicle_id}, inspections = {availableInspections.length}</p>
-            </div>
 
             {/* Linked Inspection */}
             {formData.vehicle_id > 0 && (
@@ -477,9 +474,11 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
                 placeholder="Additional notes from the technician"
               />
             </div>
-          </div>
-
-          <DialogFooter>
+          </form>
+        </div>
+      </DialogContent>
+      
+      <DialogFooter className="border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <Button
               type="button"
               variant="ghost"
@@ -491,12 +490,11 @@ const ServiceRecordFormDialog: React.FC<ServiceRecordFormDialogProps> = ({
             <Button
               type="submit"
               loading={isLoading}
+              onClick={handleSubmit}
             >
               {submitLabel}
             </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
+      </DialogFooter>
     </Dialog>
   );
 };

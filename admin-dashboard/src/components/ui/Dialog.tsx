@@ -41,7 +41,7 @@ const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, children, className })
       
       {/* Dialog */}
       <div className={cn(
-        'relative z-50 w-full max-w-lg bg-white rounded-lg shadow-lg transition-all',
+        'relative z-50 w-full max-w-lg bg-white dark:bg-gray-800 rounded-lg shadow-lg transition-all max-h-[90vh]',
         'animate-in fade-in-0 zoom-in-95 duration-300',
         className
       )}>
@@ -58,7 +58,7 @@ interface DialogHeaderProps {
 }
 
 const DialogHeader: React.FC<DialogHeaderProps> = ({ children, onClose, className }) => (
-  <div className={cn('flex items-center justify-between p-6 border-b border-gray-200', className)}>
+  <div className={cn('flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800', className)}>
     <div className="flex-1">{children}</div>
     {onClose && (
       <Button
@@ -79,7 +79,7 @@ interface DialogTitleProps {
 }
 
 const DialogTitle: React.FC<DialogTitleProps> = ({ children, className }) => (
-  <h2 className={cn('text-lg font-semibold text-gray-900', className)}>
+  <h2 className={cn('text-lg font-semibold text-gray-900 dark:text-gray-100', className)}>
     {children}
   </h2>
 );
@@ -90,7 +90,7 @@ interface DialogDescriptionProps {
 }
 
 const DialogDescription: React.FC<DialogDescriptionProps> = ({ children, className }) => (
-  <p className={cn('text-sm text-gray-600 mt-1', className)}>
+  <p className={cn('text-sm text-gray-600 dark:text-gray-400 mt-1', className)}>
     {children}
   </p>
 );
@@ -112,7 +112,7 @@ interface DialogFooterProps {
 }
 
 const DialogFooter: React.FC<DialogFooterProps> = ({ children, className }) => (
-  <div className={cn('flex items-center justify-end gap-3 p-6 border-t border-gray-200', className)}>
+  <div className={cn('flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700', className)}>
     {children}
   </div>
 );
