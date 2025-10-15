@@ -43,6 +43,7 @@ class Vehicle(Base):
     license_plate = Column(String, unique=True, nullable=False)
     vin = Column(String, nullable=True)
     color = Column(String, nullable=True)
+    mileage = Column(Integer, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     
     owner = relationship("Client", back_populates="vehicles")

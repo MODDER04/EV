@@ -39,6 +39,7 @@ class VehicleCreate(BaseModel):
     license_plate: str
     vin: Optional[str] = None
     color: Optional[str] = None
+    mileage: Optional[int] = None
 
 class VehicleResponse(BaseModel):
     id: int
@@ -49,7 +50,9 @@ class VehicleResponse(BaseModel):
     license_plate: str
     vin: Optional[str]
     color: Optional[str]
+    mileage: Optional[int]
     created_at: datetime
+    client: Optional[ClientResponse] = None
     
     class Config:
         from_attributes = True
@@ -166,14 +169,41 @@ def delete_client(client_id: int, db: Session = Depends(get_db)):
     return {"message": "Client deactivated successfully"}
 
 # Vehicle management endpoints
-@admin_router.get("/vehicles", response_model=List[VehicleResponse])
+@admin_router.get("/vehicles")
 def get_vehicles(client_id: Optional[int] = None, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Get all vehicles, optionally filtered by client"""
-    query = db.query(Vehicle)
+    query = db.query(Vehicle).options(joinedload(Vehicle.owner))
     if client_id:
         query = query.filter(Vehicle.client_id == client_id)
     vehicles = query.offset(skip).limit(limit).all()
-    return vehicles
+    
+    # Manually construct the response with client information
+    result = []
+    for vehicle in vehicles:
+        vehicle_dict = {
+            "id": vehicle.id,
+            "client_id": vehicle.client_id,
+            "make": vehicle.make,
+            "model": vehicle.model,
+            "year": vehicle.year,
+            "license_plate": vehicle.license_plate,
+            "vin": vehicle.vin,
+            "color": vehicle.color,
+            "mileage": vehicle.mileage,
+            "created_at": vehicle.created_at,
+            "client": {
+                "id": vehicle.owner.id,
+                "name": vehicle.owner.name,
+                "phone": vehicle.owner.phone,
+                "email": vehicle.owner.email,
+                "address": vehicle.owner.address,
+                "is_active": vehicle.owner.is_active,
+                "created_at": vehicle.owner.created_at
+            } if vehicle.owner else None
+        }
+        result.append(vehicle_dict)
+    
+    return result
 
 @admin_router.post("/vehicles", response_model=VehicleResponse)
 def create_vehicle(vehicle: VehicleCreate, db: Session = Depends(get_db)):
@@ -191,6 +221,7 @@ def create_vehicle(vehicle: VehicleCreate, db: Session = Depends(get_db)):
         license_plate=vehicle.license_plate,
         vin=vehicle.vin,
         color=vehicle.color,
+        mileage=vehicle.mileage,
         created_at=datetime.utcnow()
     )
     db.add(db_vehicle)
@@ -219,6 +250,7 @@ def update_vehicle(vehicle_id: int, vehicle: VehicleCreate, db: Session = Depend
     db_vehicle.license_plate = vehicle.license_plate
     db_vehicle.vin = vehicle.vin
     db_vehicle.color = vehicle.color
+    db_vehicle.mileage = vehicle.mileage
     
     db.commit()
     db.refresh(db_vehicle)
@@ -379,12 +411,13 @@ def create_service_record(record: ServiceRecordCreate, db: Session = Depends(get
             if not existing_inspection:
                 raise HTTPException(status_code=404, detail="Inspection not found or doesn't belong to this vehicle")
             
-            # Check if inspection is already linked to another service
+            # If inspection is already linked to another service, unlink it first
             existing_link = db.query(ServiceRecord).filter(
                 ServiceRecord.linked_inspection_id == record.linked_inspection_id
             ).first()
             if existing_link:
-                raise HTTPException(status_code=400, detail="Inspection is already linked to another service")
+                # Unlink from previous service
+                existing_link.linked_inspection_id = None
             
             linked_inspection_id = existing_inspection.id
             inspection_report = existing_inspection

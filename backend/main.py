@@ -729,8 +729,13 @@ async def get_all_inspections(db: Session = Depends(get_db)):
 
 @app.post("/admin/inspections")
 async def create_inspection(inspection_data: dict, db: Session = Depends(get_db)):
-    """Create a new inspection report"""
+    """Create a new inspection report with optional service creation"""
     try:
+        # Verify vehicle exists
+        vehicle = db.query(Vehicle).filter(Vehicle.id == inspection_data["vehicle_id"]).first()
+        if not vehicle:
+            raise HTTPException(status_code=404, detail="Vehicle not found")
+        
         # Create inspection report
         inspection = InspectionReport(
             vehicle_id=inspection_data["vehicle_id"],
@@ -754,6 +759,47 @@ async def create_inspection(inspection_data: dict, db: Session = Depends(get_db)
                 )
                 db.add(item)
         
+        # Create linked service if requested
+        created_service = None
+        if inspection_data.get("create_service"):
+            service_data = inspection_data.get("service_data", {})
+            
+            # Create service record
+            service = DBServiceRecord(
+                vehicle_id=inspection_data["vehicle_id"],
+                service_date=inspection.inspection_date,  # Use same date as inspection
+                status=service_data.get("status", "pending"),
+                technician_notes=service_data.get("technician_notes", f"Service recommended based on inspection findings: {inspection_data.get('recommendations', '')}"),
+                total_cost=0.0,  # Will be calculated from service items
+                linked_inspection_id=inspection.id,
+                created_at=datetime.utcnow()
+            )
+            
+            db.add(service)
+            db.flush()  # Get service ID
+            
+            # Link inspection to service
+            inspection.linked_service_record_id = service.id
+            
+            # Create service items if provided
+            total_cost = 0.0
+            if "service_items" in service_data:
+                for item_data in service_data["service_items"]:
+                    service_item = ServiceItem(
+                        service_record_id=service.id,
+                        service_type=item_data["service_type"],
+                        service_name=item_data["service_name"],
+                        description=item_data.get("description"),
+                        price=float(item_data["price"]),
+                        created_at=datetime.utcnow()
+                    )
+                    db.add(service_item)
+                    total_cost += float(item_data["price"])
+            
+            # Update service total cost
+            service.total_cost = total_cost
+            created_service = service
+        
         db.commit()
         
         # Refresh to get the relationships
@@ -768,14 +814,37 @@ async def create_inspection(inspection_data: dict, db: Session = Depends(get_db)
         vehicle = db.query(Vehicle).filter(Vehicle.id == inspection.vehicle_id).first()
         client = db.query(Client).filter(Client.id == vehicle.client_id).first()
         
+        # Prepare service data if created
+        created_service_data = None
+        if created_service:
+            service_items = db.query(ServiceItem).filter(
+                ServiceItem.service_record_id == created_service.id
+            ).all()
+            
+            created_service_data = {
+                "id": created_service.id,
+                "status": created_service.status,
+                "total_cost": created_service.total_cost,
+                "technician_notes": created_service.technician_notes,
+                "service_items": [{
+                    "id": item.id,
+                    "service_type": item.service_type,
+                    "service_name": item.service_name,
+                    "description": item.description,
+                    "price": item.price
+                } for item in service_items]
+            }
+        
         return {
             "id": inspection.id,
             "vehicle_id": inspection.vehicle_id,
             "inspection_date": inspection.inspection_date.isoformat(),
             "overall_status": inspection.overall_condition,
             "notes": inspection.technician_notes,
+            "recommendations": inspection.recommendations,
             "created_at": inspection.created_at.isoformat(),
             "updated_at": inspection.created_at.isoformat(),
+            "created_service": created_service_data,
             "vehicle": {
                 "id": vehicle.id,
                 "make": vehicle.make,

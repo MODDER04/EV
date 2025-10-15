@@ -103,7 +103,8 @@ def create_sample_data(db):
         year=2018,
         license_plate="ABC123",
         vin="1234567890ABCDEF0",
-        color="Black"
+        color="Black",
+        mileage=45000
     )
     
     vehicle2 = Vehicle(
@@ -113,7 +114,8 @@ def create_sample_data(db):
         year=2020,
         license_plate="XYZ789",
         vin="0987654321FEDCBA0",
-        color="White"
+        color="White",
+        mileage=28000
     )
     
     vehicle3 = Vehicle(
@@ -123,7 +125,8 @@ def create_sample_data(db):
         year=2022,
         license_plate="EV001",
         vin="TESLA123456789ABC",
-        color="Red"
+        color="Red",
+        mileage=15000
     )
     
     db.add_all([vehicle1, vehicle2, vehicle3])
