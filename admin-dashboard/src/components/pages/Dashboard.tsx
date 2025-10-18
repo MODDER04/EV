@@ -62,24 +62,24 @@ const Dashboard: React.FC = () => {
   const getColorClasses = (color: string) => {
     const colors = {
       blue: {
-        bg: 'bg-blue-100',
-        text: 'text-blue-600',
-        border: 'border-blue-200',
+        bg: 'bg-gradient-to-r from-blue-500/20 to-indigo-500/20 dark:from-blue-600/20 dark:to-indigo-600/20',
+        text: 'text-blue-600 dark:text-blue-400',
+        border: 'border-blue-200/50 dark:border-blue-600/50',
       },
       green: {
-        bg: 'bg-green-100',
-        text: 'text-green-600',
-        border: 'border-green-200',
+        bg: 'bg-gradient-to-r from-green-500/20 to-emerald-500/20 dark:from-green-600/20 dark:to-emerald-600/20',
+        text: 'text-green-600 dark:text-green-400',
+        border: 'border-green-200/50 dark:border-green-600/50',
       },
       purple: {
-        bg: 'bg-purple-100',
-        text: 'text-purple-600',
-        border: 'border-purple-200',
+        bg: 'bg-gradient-to-r from-purple-500/20 to-violet-500/20 dark:from-purple-600/20 dark:to-violet-600/20',
+        text: 'text-purple-600 dark:text-purple-400',
+        border: 'border-purple-200/50 dark:border-purple-600/50',
       },
       yellow: {
-        bg: 'bg-yellow-100',
-        text: 'text-yellow-600',
-        border: 'border-yellow-200',
+        bg: 'bg-gradient-to-r from-yellow-500/20 to-amber-500/20 dark:from-yellow-600/20 dark:to-amber-600/20',
+        text: 'text-yellow-600 dark:text-yellow-400',
+        border: 'border-yellow-200/50 dark:border-yellow-600/50',
       },
     };
     return colors[color as keyof typeof colors] || colors.blue;
@@ -90,18 +90,18 @@ const Dashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600">Welcome to EvMaster Workshop Admin Panel</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">Dashboard</h1>
+          <p className="text-gray-600 dark:text-gray-400 font-medium">Welcome to EvMaster Workshop Admin Panel</p>
         </div>
         
         {/* System Status */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 shadow-lg">
           <div className={cn(
-            'w-3 h-3 rounded-full',
-            healthLoading ? 'bg-yellow-500' : 
-            healthStatus?.status === 'healthy' ? 'bg-green-500' : 'bg-red-500'
+            'w-3 h-3 rounded-full shadow-lg',
+            healthLoading ? 'bg-yellow-500 animate-pulse' : 
+            healthStatus?.status === 'healthy' ? 'bg-green-500 shadow-green-500/50' : 'bg-red-500 shadow-red-500/50'
           )} />
-          <span className="text-sm font-medium text-gray-700">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {healthLoading ? 'Checking...' : 
              healthStatus?.status === 'healthy' ? 'System Healthy' : 'System Issues'}
           </span>
@@ -119,18 +119,18 @@ const Dashboard: React.FC = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600 mb-1">
+                    <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                       {stat.title}
                     </p>
-                    <p className="text-2xl font-bold text-gray-900">
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                       {typeof stat.value === 'string' ? stat.value : formatNumber(stat.value)}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {stat.description}
                     </p>
                   </div>
                   <div className={cn(
-                    'p-3 rounded-full',
+                    'p-3 rounded-2xl shadow-lg',
                     colorClasses.bg
                   )}>
                     <Icon className={cn('h-6 w-6', colorClasses.text)} />
@@ -148,44 +148,44 @@ const Dashboard: React.FC = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-blue-600" />
+              <Activity className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               Recent Activity
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full" />
+              <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200/50 dark:border-green-600/30">
+                <div className="w-3 h-3 bg-green-500 rounded-full shadow-lg shadow-green-500/50" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     System initialized successfully
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {healthStatus?.timestamp ? new Date(healthStatus.timestamp).toLocaleString() : 'Just now'}
                   </p>
                 </div>
               </div>
               
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <div className="w-2 h-2 bg-blue-500 rounded-full" />
+              <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200/50 dark:border-blue-600/30">
+                <div className="w-3 h-3 bg-blue-500 rounded-full shadow-lg shadow-blue-500/50" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                     Dashboard loaded
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {new Date().toLocaleString()}
                   </p>
                 </div>
               </div>
               
               {stats?.recent_services && stats.recent_services > 0 && (
-                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full" />
+                <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-xl border border-purple-200/50 dark:border-purple-600/30">
+                  <div className="w-3 h-3 bg-purple-500 rounded-full shadow-lg shadow-purple-500/50" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                       {stats.recent_services} recent service records
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       In the last 30 days
                     </p>
                   </div>

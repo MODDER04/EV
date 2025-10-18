@@ -14,7 +14,8 @@ import {
   Copy,
   Eye,
   EyeOff,
-  ClipboardList
+  ClipboardList,
+  ExternalLink
 } from 'lucide-react';
 import {
   Card, 
@@ -51,7 +52,8 @@ import {
   useServiceRecords,
   useCreateServiceRecord,
   useUpdateServiceRecord,
-  useDeleteServiceRecord
+  useDeleteServiceRecord,
+  useInspection
 } from '../../hooks/api';
 import { 
   Client, 
@@ -61,7 +63,8 @@ import {
   ClientCode,
   ClientCodeFormData,
   ServiceRecord,
-  ServiceRecordFormData
+  ServiceRecordFormData,
+  AdminSection
 } from '../../types';
 import { 
   formatDate, 
@@ -76,6 +79,9 @@ import ClientFormDialog from '../forms/ClientFormDialog';
 import VehicleFormDialog from '../forms/VehicleFormDialog';
 import ClientCodeFormDialog from '../forms/ClientCodeFormDialog';
 import ServiceRecordFormDialog from '../forms/ServiceRecordFormDialog';
+import InspectionViewDialog from '../dialogs/InspectionViewDialog';
+import VehicleHistoryDialog from '../dialogs/VehicleHistoryDialog';
+import ServiceRecordViewDialog from '../dialogs/ServiceRecordViewDialog';
 
 // Placeholder components for now - these will be expanded later
 
@@ -392,6 +398,7 @@ export const VehiclesManager: React.FC = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
   const [deletingVehicle, setDeletingVehicle] = useState<Vehicle | null>(null);
+  const [viewingVehicleHistory, setViewingVehicleHistory] = useState<Vehicle | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   
   const { data: vehicles, isLoading, error } = useVehicles();
@@ -619,6 +626,14 @@ export const VehiclesManager: React.FC = () => {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => setViewingVehicleHistory(vehicle)}
+                        title="View vehicle history"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => setEditingVehicle(vehicle)}
                       >
                         <Edit className="h-4 w-4" />
@@ -687,6 +702,15 @@ export const VehiclesManager: React.FC = () => {
         variant="danger"
         loading={deleteVehicleMutation.isPending}
       />
+
+      {/* Vehicle History Dialog */}
+      {viewingVehicleHistory && (
+        <VehicleHistoryDialog
+          isOpen={!!viewingVehicleHistory}
+          onClose={() => setViewingVehicleHistory(null)}
+          vehicle={viewingVehicleHistory}
+        />
+      )}
     </div>
   );
 };
@@ -709,8 +733,11 @@ export const CodesManager: React.FC = () => {
   const { success, error: showError } = useToastHelpers();
 
   const filteredCodes = codes?.filter(code => {
+    // Find the client by matching client_id for search
+    const client = code.client_id ? clients?.find(c => c.id === code.client_id) : null;
+    
     const matchesSearch = code.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (code.client?.name && code.client.name.toLowerCase().includes(searchTerm.toLowerCase()));
+      (client?.name && client.name.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesStatus = statusFilter === 'all' || 
       (statusFilter === 'active' && code.is_active) ||
@@ -973,22 +1000,26 @@ export const CodesManager: React.FC = () => {
                       </Button>
                     </div>
                   ),
-                  client: (
-                    <div className="text-sm text-gray-900 dark:text-gray-100">
-                      {code.client ? (
-                        <div>
-                          <div className="font-medium">{code.client.name}</div>
-                          {code.client.phone && (
-                            <div className="text-gray-500 dark:text-gray-400">
-                              {formatPhone(code.client.phone)}
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-gray-400 dark:text-gray-500 italic">Unassigned</span>
-                      )}
-                    </div>
-                  ),
+                  client: (() => {
+                    // Find the client by matching client_id
+                    const client = code.client_id ? clients?.find(c => c.id === code.client_id) : null;
+                    return (
+                      <div className="text-sm text-gray-900 dark:text-gray-100">
+                        {client ? (
+                          <div>
+                            <div className="font-medium">{client.name}</div>
+                            {client.phone && (
+                              <div className="text-gray-500 dark:text-gray-400">
+                                {formatPhone(client.phone)}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 dark:text-gray-500 italic">Unassigned</span>
+                        )}
+                      </div>
+                    );
+                  })(),
                   status: (
                     <Badge variant={code.is_active ? 'success' : 'danger'}>
                       {code.is_active ? 'Active' : 'Inactive'}
@@ -1097,18 +1128,28 @@ export const CodesManager: React.FC = () => {
   );
 };
 
-export const ServiceRecordsManager: React.FC = () => {
+interface ServiceRecordsManagerProps {
+  navigateToSection?: (section: AdminSection) => void;
+}
+
+export const ServiceRecordsManager: React.FC<ServiceRecordsManagerProps> = ({ navigateToSection }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingRecord, setEditingRecord] = useState<ServiceRecord | null>(null);
   const [deletingRecord, setDeletingRecord] = useState<ServiceRecord | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedVehicle, setSelectedVehicle] = useState<number | null>(null);
+  const [viewingInspectionId, setViewingInspectionId] = useState<number | null>(null);
+  const [viewingServiceRecord, setViewingServiceRecord] = useState<ServiceRecord | null>(null);
   
   const { data: serviceRecords, isLoading, error } = useServiceRecords();
   const { data: vehicles } = useVehicles();
   const createRecordMutation = useCreateServiceRecord();
   const updateRecordMutation = useUpdateServiceRecord();
   const deleteRecordMutation = useDeleteServiceRecord();
+  const { data: viewingInspection } = useInspection(viewingInspectionId || 0, { 
+    enabled: !!viewingInspectionId,
+    queryKey: ['inspection', viewingInspectionId || 0]
+  });
   const { success, error: showError } = useToastHelpers();
 
   const filteredRecords = serviceRecords?.filter(record => {
@@ -1366,10 +1407,21 @@ export const ServiceRecordsManager: React.FC = () => {
                     <div>
                       {record.linked_inspection_id ? (
                         <div className="text-center">
-                          <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800">
-                            🔗 #{record.linked_inspection_id}
-                          </span>
-                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          <div className="flex items-center justify-center gap-2 mb-1">
+                            <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800">
+                              🔗 #{record.linked_inspection_id}
+                            </span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setViewingInspectionId(record.linked_inspection_id!)}
+                              className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                              title="View linked inspection"
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                            </Button>
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">
                             Linked Inspection
                           </div>
                         </div>
@@ -1408,6 +1460,14 @@ export const ServiceRecordsManager: React.FC = () => {
                   ),
                   actions: (
                     <div className="flex items-center justify-end space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setViewingServiceRecord(record)}
+                        title="View service record details"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -1479,6 +1539,28 @@ export const ServiceRecordsManager: React.FC = () => {
         variant="danger"
         loading={deleteRecordMutation.isPending}
       />
+
+      {/* Linked Inspection View Dialog */}
+      {viewingInspection && (
+        <InspectionViewDialog
+          isOpen={!!viewingInspectionId}
+          onClose={() => setViewingInspectionId(null)}
+          inspection={viewingInspection}
+        />
+      )}
+
+      {/* Service Record View Dialog */}
+      {viewingServiceRecord && (
+        <ServiceRecordViewDialog
+          isOpen={!!viewingServiceRecord}
+          onClose={() => setViewingServiceRecord(null)}
+          serviceRecord={viewingServiceRecord}
+          onEdit={(record) => {
+            setViewingServiceRecord(null);
+            setEditingRecord(record);
+          }}
+        />
+      )}
     </div>
   );
 };

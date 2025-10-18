@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Search, Eye, Edit2, Trash2, Calendar, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { InspectionReport } from '../../types';
+import { Plus, Search, Eye, Edit2, Trash2, Calendar, CheckCircle, XCircle, AlertCircle, ExternalLink } from 'lucide-react';
+import { InspectionReport, AdminSection } from '../../types';
 import { Card, Button, Input } from '../ui';
 import InspectionFormDialog from '../forms/InspectionFormDialog';
 import {
@@ -8,8 +8,10 @@ import {
   useVehicles,
   useCreateInspection,
   useUpdateInspection,
-  useDeleteInspection
+  useDeleteInspection,
+  useServiceRecord
 } from '../../hooks/api';
+import ServiceRecordViewDialog from '../dialogs/ServiceRecordViewDialog';
 
 // Custom filter state for inspections
 interface InspectionFilterState {
@@ -17,11 +19,15 @@ interface InspectionFilterState {
   status: 'all' | 'good' | 'needs_attention' | 'replace';
 }
 
+interface InspectionsManagerProps {
+  navigateToSection?: (section: AdminSection) => void;
+}
 
-const InspectionsManager: React.FC = () => {
+const InspectionsManager: React.FC<InspectionsManagerProps> = ({ navigateToSection }) => {
   const [selectedInspection, setSelectedInspection] = useState<InspectionReport | null>(null);
   const [showFormDialog, setShowFormDialog] = useState(false);
   const [viewDetailsDialog, setViewDetailsDialog] = useState(false);
+  const [viewingServiceRecordId, setViewingServiceRecordId] = useState<number | null>(null);
   const [filters, setFilters] = useState<InspectionFilterState>({
     search: '',
     status: 'all'
@@ -33,6 +39,10 @@ const InspectionsManager: React.FC = () => {
   const createInspectionMutation = useCreateInspection();
   const updateInspectionMutation = useUpdateInspection();
   const deleteInspectionMutation = useDeleteInspection();
+  const { data: viewingServiceRecord } = useServiceRecord(viewingServiceRecordId || 0, { 
+    enabled: !!viewingServiceRecordId,
+    queryKey: ['service-record', viewingServiceRecordId || 0]
+  });
 
   const handleCreateInspection = () => {
     setSelectedInspection(null);
@@ -292,10 +302,21 @@ const InspectionsManager: React.FC = () => {
                   <td className="px-6 py-4">
                     {inspection.linked_service_id ? (
                       <div className="text-center">
-                        <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-                          🔗 Service #{inspection.linked_service_id}
-                        </span>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                          <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                            🔗 Service #{inspection.linked_service_id}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setViewingServiceRecordId(inspection.linked_service_id!)}
+                            className="h-6 w-6 p-0 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                            title="View linked service record"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
                           Linked Service
                         </div>
                       </div>
@@ -461,6 +482,15 @@ const InspectionsManager: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Linked Service Record View Dialog */}
+      {viewingServiceRecord && (
+        <ServiceRecordViewDialog
+          isOpen={!!viewingServiceRecordId}
+          onClose={() => setViewingServiceRecordId(null)}
+          serviceRecord={viewingServiceRecord}
+        />
       )}
     </div>
   );

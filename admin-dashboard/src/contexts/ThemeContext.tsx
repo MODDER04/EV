@@ -24,9 +24,9 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [theme, setThemeState] = useState<Theme>(() => {
-    // Get theme from localStorage or default to light
+    // Get theme from localStorage or default to dark
     const savedTheme = localStorage.getItem('evmaster-theme') as Theme;
-    return savedTheme || 'light';
+    return savedTheme || 'dark';
   });
 
   const setTheme = (newTheme: Theme) => {
@@ -49,7 +49,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     if (metaThemeColor) {
       metaThemeColor.setAttribute(
         'content', 
-        theme === 'dark' ? '#1f2937' : '#ffffff'
+        theme === 'dark' ? '#0f172a' : '#f8fafc'
       );
     }
   }, [theme]);

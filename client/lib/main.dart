@@ -92,10 +92,6 @@ class EvMasterApp extends StatelessWidget {
         selectedItemColor: Color(0xFF4A90E2),
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: TextStyle(fontSize: 12, overflow: TextOverflow.ellipsis),
-        unselectedLabelStyle: TextStyle(fontSize: 12, overflow: TextOverflow.ellipsis),
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
       ),
     );
   }
