@@ -693,6 +693,7 @@ async def get_all_inspections(db: Session = Depends(get_db)):
             "notes": inspection.technician_notes,
             "created_at": inspection.created_at.isoformat(),
             "updated_at": inspection.created_at.isoformat(),  # Use created_at since updated_at doesn't exist
+            "linked_service_id": getattr(inspection, 'linked_service_record_id', None),
             "vehicle": {
                 "id": inspection.vehicle.id,
                 "make": inspection.vehicle.make,

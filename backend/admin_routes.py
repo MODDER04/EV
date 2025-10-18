@@ -368,6 +368,7 @@ class ServiceRecordResponse(BaseModel):
     technician_notes: Optional[str]
     total_cost: float
     created_at: datetime
+    linked_inspection_id: Optional[int] = None
     vehicle: Optional[VehicleResponse] = None
     service_items: List[ServiceItemResponse] = []
     
