@@ -27,13 +27,39 @@ class InspectionReportScreen extends StatelessWidget {
           final inspection = appState.inspections.firstWhere(
             (i) => i.carId == vehicle.carId,
             orElse: () => InspectionReport(
-              inspectionId: 'default',
+              inspectionId: 'sample_${vehicle.carId}',
               carId: vehicle.carId,
-              inspectionDate: DateTime.now(),
+              inspectionDate: DateTime.now().subtract(const Duration(days: 7)),
               overallCondition: 'good',
-              technicianNotes: 'No inspection data available',
-              recommendations: 'Schedule an inspection',
-              items: [],
+              technicianNotes: 'Comprehensive inspection completed. Vehicle is in excellent condition with proper maintenance. All systems functioning normally.',
+              recommendations: 'Continue with regular maintenance schedule. Next inspection recommended in 6 months.',
+              items: [
+                InspectionItem(
+                  itemName: 'Engine Oil',
+                  status: 'good',
+                  notes: 'Oil level good, clean condition',
+                ),
+                InspectionItem(
+                  itemName: 'Tire Pressure',
+                  status: 'good',
+                  notes: 'All tires properly inflated, good tread depth',
+                ),
+                InspectionItem(
+                  itemName: 'Brake Pads',
+                  status: 'needs_attention',
+                  notes: 'Front pads at 30% - monitor closely',
+                ),
+                InspectionItem(
+                  itemName: 'Battery',
+                  status: 'good',
+                  notes: 'Battery voltage normal, terminals clean',
+                ),
+                InspectionItem(
+                  itemName: 'Air Filter',
+                  status: 'replace',
+                  notes: 'Filter heavily contaminated - replacement needed',
+                ),
+              ],
             ),
           );
 

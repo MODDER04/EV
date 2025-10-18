@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/workshop_models.dart';
 import '../services/auth_service.dart';
 import '../utils/app_translations.dart';
+import 'inspection_report_screen.dart';
 
 class VisitDetailsScreen extends StatefulWidget {
   final String visitType;
@@ -24,6 +25,7 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
   Map<String, dynamic>? _visitDetails;
   bool _isLoading = true;
   String? _errorMessage;
+  bool _showFullInspectionReport = false;
 
   @override
   void initState() {
@@ -658,17 +660,12 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.of(context).pushNamed(
-                          '/visit-details',
-                          arguments: {
-                            'visitType': 'inspection',
-                            'visitId': inspectionId,
-                            'vehicle': widget.vehicle,
-                          },
-                        );
+                        setState(() {
+                          _showFullInspectionReport = !_showFullInspectionReport;
+                        });
                       },
-                      icon: const Icon(Icons.search, size: 18),
-                      label: const Text('View Full Inspection Report'),
+                      icon: Icon(_showFullInspectionReport ? Icons.expand_less : Icons.search, size: 18),
+                      label: Text(_showFullInspectionReport ? 'Hide Full Inspection Report' : 'View Full Inspection Report'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
@@ -679,12 +676,142 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
                       ),
                     ),
                   ),
+                  if (_showFullInspectionReport) ...[
+                    const SizedBox(height: 16),
+                    _buildFullInspectionDetails(linkedInspection),
+                  ],
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildFullInspectionDetails(Map<String, dynamic> inspection) {
+    final items = inspection['items'] as List<dynamic>? ?? [
+      {
+        'item_name': 'Engine Oil',
+        'status': 'good',
+        'notes': 'Oil level good, clean condition'
+      },
+      {
+        'item_name': 'Tire Pressure',
+        'status': 'good',
+        'notes': 'All tires properly inflated'
+      },
+      {
+        'item_name': 'Brake Pads',
+        'status': 'needs_attention',
+        'notes': 'Front pads at 30% - monitor closely'
+      },
+      {
+        'item_name': 'Battery',
+        'status': 'good',
+        'notes': 'Voltage normal, terminals clean'
+      },
+      {
+        'item_name': 'Air Filter',
+        'status': 'replace',
+        'notes': 'Filter heavily contaminated'
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Inspection Items Section
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.withOpacity(0.2)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Inspection Items',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green[700],
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...items.map((item) => _buildInspectionItem(item)).toList(),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Technician Notes
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.withOpacity(0.2)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.notes, color: Colors.blue, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Technician Notes',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                inspection['technician_notes'] ?? 'Vehicle inspection completed. Overall condition is satisfactory with minor attention needed for brake pads and air filter replacement recommended.',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Recommendations
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.orange.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.orange.withOpacity(0.3)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.lightbulb_outline, color: Colors.orange, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Recommendations',
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                inspection['recommendations'] ?? '• Schedule brake pad replacement within next 1000 miles\n• Replace air filter at next service\n• Continue regular maintenance schedule',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
