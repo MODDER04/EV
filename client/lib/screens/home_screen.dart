@@ -214,7 +214,7 @@ class HomeScreen extends StatelessWidget {
                           ),
                           title: Text(service.serviceType),
                           subtitle: Text(
-                            '${service.date.day}/${service.date.month}/${service.date.year} - ${service.formattedCost}',
+                            '${service.date.day}/${service.date.month}/${service.date.year}',
                           ),
                           trailing: Chip(
                             label: Text(

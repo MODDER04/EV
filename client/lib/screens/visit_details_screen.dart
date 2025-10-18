@@ -239,8 +239,8 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
                 const SizedBox(height: 16),
                 if (_visitDetails!['description'] != null)
                   _buildDetailRow(context.t.description, _visitDetails!['description']),
-                if (_visitDetails!['cost'] != null)
-                  _buildDetailRow(context.t.cost, '\$${_visitDetails!['cost'].toStringAsFixed(2)}'),
+                // if (_visitDetails!['cost'] != null)
+                //   _buildDetailRow(context.t.cost, '\$${_visitDetails!['cost'].toStringAsFixed(2)}'),
                 if (_visitDetails!['status'] != null)
                   _buildDetailRow(context.t.status, _visitDetails!['status']),
                 if (_visitDetails!['created_at'] != null)
@@ -339,20 +339,20 @@ class _VisitDetailsScreenState extends State<VisitDetailsScreen> {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              '\$${price.toStringAsFixed(2)}',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.green[700],
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+          // Container(
+          //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          //   decoration: BoxDecoration(
+          //     color: Colors.green.withOpacity(0.2),
+          //     borderRadius: BorderRadius.circular(20),
+          //   ),
+          //   child: Text(
+          //     '\$${price.toStringAsFixed(2)}',
+          //     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          //       color: Colors.green[700],
+          //       fontWeight: FontWeight.bold,
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

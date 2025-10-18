@@ -238,6 +238,9 @@ const InspectionsManager: React.FC = () => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Items
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Linked Service
+                </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Actions
                 </th>
@@ -286,6 +289,24 @@ const InspectionsManager: React.FC = () => {
                       {inspection.items?.filter(item => item.status === 'replace').length || 0} replace
                     </div>
                   </td>
+                  <td className="px-6 py-4">
+                    {inspection.linked_service_id ? (
+                      <div className="text-center">
+                        <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                          🔗 Service #{inspection.linked_service_id}
+                        </span>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Linked Service
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <span className="text-xs text-gray-400 dark:text-gray-500 italic">
+                          No linked service
+                        </span>
+                      </div>
+                    )}
+                  </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end space-x-2">
                       <Button
@@ -317,7 +338,7 @@ const InspectionsManager: React.FC = () => {
               
               {filteredInspections.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+                  <td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     No inspections found matching your criteria
                   </td>
                 </tr>

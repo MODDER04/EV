@@ -322,56 +322,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   
                   const SizedBox(height: 24),
                   
-                  // Demo Code Hint (for testing)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: Colors.green.withOpacity(0.3),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.code,
-                              color: Colors.green.shade300,
-                              size: 16,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Demo: Try "DEMO123" or any code',
-                              style: TextStyle(
-                                color: Colors.green.shade300,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'API: ${ApiConfig.baseUrl}',
-                          style: TextStyle(
-                            color: Colors.green.shade300.withOpacity(0.7),
-                            fontSize: 10,
-                            fontFamily: 'monospace',
-                          ),
-                        ),
-                        Text(
-                          'Platform: ${Platform.isAndroid ? "Android" : Platform.isIOS ? "iOS" : "Other"}',
-                          style: TextStyle(
-                            color: Colors.green.shade300.withOpacity(0.7),
-                            fontSize: 10,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  
                 ],
               ),
             ),

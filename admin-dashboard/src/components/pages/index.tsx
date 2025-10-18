@@ -1308,11 +1308,12 @@ export const ServiceRecordsManager: React.FC = () => {
             <div className="space-y-4">
               <Table
                 columns={[
-                  { key: 'vehicle', header: 'Vehicle', width: '20%' },
-                  { key: 'serviceDetails', header: 'Service Details', width: '30%' },
-                  { key: 'status', header: 'Status', width: '15%' },
-                  { key: 'cost', header: 'Cost', width: '15%' },
-                  { key: 'date', header: 'Date', width: '10%' },
+                  { key: 'vehicle', header: 'Vehicle', width: '18%' },
+                  { key: 'serviceDetails', header: 'Service Details', width: '25%' },
+                  { key: 'inspection', header: 'Related Inspection', width: '15%' },
+                  { key: 'status', header: 'Status', width: '12%' },
+                  { key: 'cost', header: 'Cost', width: '12%' },
+                  { key: 'date', header: 'Date', width: '8%' },
                   { key: 'actions', header: 'Actions', width: '10%' },
                 ]}
                 data={serviceRecordsPagination.paginatedData}
@@ -1357,6 +1358,26 @@ export const ServiceRecordsManager: React.FC = () => {
                       {record.technician_notes && (
                         <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           Notes: {truncateText(record.technician_notes, 30)}
+                        </div>
+                      )}
+                    </div>
+                  ),
+                  inspection: (
+                    <div>
+                      {record.linked_inspection_id ? (
+                        <div className="text-center">
+                          <span className="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800">
+                            🔗 #{record.linked_inspection_id}
+                          </span>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            Linked Inspection
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-center">
+                          <span className="text-xs text-gray-400 dark:text-gray-500 italic">
+                            No linked inspection
+                          </span>
                         </div>
                       )}
                     </div>

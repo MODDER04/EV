@@ -400,16 +400,16 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
                             color: Colors.grey[500],
                           ),
                         ),
-                        if (visit['cost'] != null) ...[
-                          const SizedBox(width: 16),
-                          Text(
-                            '\$${visit['cost'].toStringAsFixed(2)}',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
+                        // if (visit['cost'] != null) ...[
+                        //   const SizedBox(width: 16),
+                        //   Text(
+                        //     '\$${visit['cost'].toStringAsFixed(2)}',
+                        //     style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        //       color: Colors.green,
+                        //       fontWeight: FontWeight.w600,
+                        //     ),
+                        //   ),
+                        // ],
                       ],
                     ),
                   ],
